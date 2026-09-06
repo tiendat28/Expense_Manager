@@ -29,8 +29,8 @@ async function remove() {
 </script>
 
 <template>
-  <div class="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center z-20" @click.self="$emit('close')">
-    <div class="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md p-5 space-y-4">
+  <div class="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-30" @click.self="$emit('close')">
+    <div class="bg-white rounded-2xl w-full sm:max-w-md p-5 space-y-4 max-h-[85vh] overflow-y-auto">
       <h2 class="font-semibold text-lg">
         {{ existing
           ? 'Sửa lần thanh toán'
