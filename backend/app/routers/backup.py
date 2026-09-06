@@ -13,6 +13,7 @@ from app.models.savings import SavingsGoal, SavingsContribution
 from app.models.debt import DebtRecord, DebtPaymentRecord
 from app.models.bill import RecurringBill
 from app.models.budget import CategoryBudget
+from app.models.gift_money import GiftMoneyRecord
 from app.core.deps import get_current_user
 
 router = APIRouter(prefix="/backup", tags=["backup"])
@@ -25,6 +26,7 @@ def export_backup(db: Session = Depends(get_db), current_user: User = Depends(ge
     debts = db.query(DebtRecord).filter(DebtRecord.user_id == current_user.id).all()
     bills = db.query(RecurringBill).filter(RecurringBill.user_id == current_user.id).all()
     cbs = db.query(CategoryBudget).filter(CategoryBudget.user_id == current_user.id).all()
+    gift_money = db.query(GiftMoneyRecord).filter(GiftMoneyRecord.user_id == current_user.id).all()
 
     return {
         "transactions": [
@@ -62,6 +64,13 @@ def export_backup(db: Session = Depends(get_db), current_user: User = Depends(ge
         ],
         "monthly_budget": float(current_user.monthly_budget),
         "category_budgets": {cb.category: float(cb.limit_amount) for cb in cbs},
+        "gift_money": [
+            {
+                "name": g.name, "address": g.address, "amount": float(g.amount),
+                "type": g.type.value, "date": g.date.isoformat(), "note": g.note,
+            }
+            for g in gift_money
+        ],
     }
 
 
@@ -96,6 +105,7 @@ def import_backup(payload: dict, db: Session = Depends(get_db), current_user: Us
         db.query(DebtRecord).filter(DebtRecord.user_id == current_user.id).delete()
         db.query(RecurringBill).filter(RecurringBill.user_id == current_user.id).delete()
         db.query(CategoryBudget).filter(CategoryBudget.user_id == current_user.id).delete()
+        db.query(GiftMoneyRecord).filter(GiftMoneyRecord.user_id == current_user.id).delete()
 
         for t in payload.get("transactions", []):
             db.add(Transaction(
@@ -131,6 +141,12 @@ def import_backup(payload: dict, db: Session = Depends(get_db), current_user: Us
             current_user.monthly_budget = payload["monthly_budget"]
         for category, limit in payload.get("category_budgets", {}).items():
             db.add(CategoryBudget(user_id=current_user.id, category=category, limit_amount=limit))
+        for gm in payload.get("gift_money", []):
+            db.add(GiftMoneyRecord(
+                user_id=current_user.id, name=gm["name"], address=gm.get("address", ""),
+                amount=gm["amount"], type=gm["type"], date=date.fromisoformat(gm["date"]),
+                note=gm.get("note", ""),
+            ))
 
         db.commit()
     except (KeyError, ValueError, TypeError) as exc:
