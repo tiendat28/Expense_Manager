@@ -46,7 +46,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl p-6 text-center mb-4">
+    <div class="bg-white rounded-2xl card-shadow p-6 text-center mb-4">
       <div :class="color" class="text-4xl mb-2">{{ debt.type === 'owe' ? '↑' : '↓' }}</div>
       <div class="font-semibold text-lg">{{ debt.person_name }}</div>
       <div class="text-sm text-gray-900 mb-3">{{ debt.type === 'owe' ? 'Tôi nợ' : 'Cho vay' }} · {{ category?.icon }} {{ debt.category }}</div>
@@ -61,7 +61,7 @@ onMounted(() => {
     </div>
 
     <h3 class="font-semibold mb-2 text-sm text-gray-900">Lịch sử thanh toán</h3>
-    <div class="bg-white rounded-2xl divide-y mb-24">
+    <div class="bg-white rounded-2xl card-shadow divide-y mb-24">
       <p v-if="!sortedPayments.length" class="text-center text-gray-900 py-6 text-sm">Chưa có lần thanh toán nào.</p>
       <div
         v-for="p in sortedPayments" :key="p.id"

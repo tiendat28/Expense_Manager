@@ -28,7 +28,7 @@ onMounted(() => store.fetchAll())
     <div class="space-y-3">
       <router-link
         v-for="goal in store.goals" :key="goal.id" :to="`/savings/${goal.id}`"
-        class="block bg-white rounded-2xl border p-4"
+        class="block bg-white rounded-2xl card-shadow p-4"
       >
         <div class="flex items-center mb-2">
           <span class="text-2xl mr-2">{{ goal.icon }}</span>

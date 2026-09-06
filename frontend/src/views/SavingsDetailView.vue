@@ -49,7 +49,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl p-6 text-center mb-4">
+    <div class="bg-white rounded-2xl card-shadow p-6 text-center mb-4">
       <div class="text-4xl mb-2">{{ goal.icon }}</div>
       <div class="font-semibold text-lg">{{ goal.name }}</div>
       <div class="text-sm text-gray-900 mb-2">{{ formatVND(savedAmount) }} / {{ formatVND(goal.target_amount) }}</div>
@@ -61,7 +61,7 @@ onMounted(() => {
     </div>
 
     <h3 class="font-semibold mb-2 text-sm text-gray-900">Lịch sử nạp tiền</h3>
-    <div class="bg-white rounded-2xl divide-y mb-24">
+    <div class="bg-white rounded-2xl card-shadow divide-y mb-24">
       <p v-if="!sortedContributions.length" class="text-center text-gray-900 py-6 text-sm">Chưa có lần nạp nào.</p>
       <div
         v-for="c in sortedContributions" :key="c.id"

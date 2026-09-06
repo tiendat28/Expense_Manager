@@ -25,7 +25,7 @@ onMounted(() => store.fetchAll())
     </template>
 
     <p v-if="!store.items.length" class="text-center text-gray-900 py-10 text-sm">Chưa có hóa đơn định kỳ nào. Nhấn + để thêm.</p>
-    <div class="bg-white rounded-2xl divide-y">
+    <div class="bg-white rounded-2xl card-shadow divide-y">
       <div v-for="bill in store.items" :key="bill.id" class="flex items-center px-4 py-3">
         <span class="w-8 text-center text-lg">{{ categoryMeta(bill.category, 'expense').icon }}</span>
         <div class="flex-1 ml-2 cursor-pointer" @click="editing = bill">

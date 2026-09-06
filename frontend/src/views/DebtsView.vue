@@ -32,7 +32,7 @@ onMounted(() => store.fetchAll())
       <div>
         <h2 class="font-semibold text-red-600 mb-2">Tôi nợ</h2>
         <p v-if="!store.oweList.length" class="text-xs text-gray-900">Không có khoản nào</p>
-        <router-link v-for="d in store.oweList" :key="d.id" :to="`/debts/${d.id}`" class="block bg-white rounded-2xl border p-4 mb-3">
+        <router-link v-for="d in store.oweList" :key="d.id" :to="`/debts/${d.id}`" class="block bg-white rounded-2xl card-shadow p-4 mb-3">
           <div class="flex justify-between mb-2">
             <div>
               <div class="font-semibold">{{ d.person_name }}</div>
@@ -53,7 +53,7 @@ onMounted(() => store.fetchAll())
       <div>
         <h2 class="font-semibold text-green-600 mb-2">Cho vay</h2>
         <p v-if="!store.lentList.length" class="text-xs text-gray-900">Không có khoản nào</p>
-        <router-link v-for="d in store.lentList" :key="d.id" :to="`/debts/${d.id}`" class="block bg-white rounded-2xl border p-4 mb-3">
+        <router-link v-for="d in store.lentList" :key="d.id" :to="`/debts/${d.id}`" class="block bg-white rounded-2xl card-shadow p-4 mb-3">
           <div class="flex justify-between mb-2">
             <div>
               <div class="font-semibold">{{ d.person_name }}</div>

@@ -34,7 +34,7 @@ onMounted(() => tx.refreshAll())
       </div>
     </template>
 
-    <div class="bg-white rounded-2xl divide-y">
+    <div class="bg-white rounded-2xl card-shadow divide-y">
       <p v-if="!filtered.length" class="text-center text-gray-900 py-6 text-sm">Không có giao dịch nào.</p>
       <div v-for="t in filtered" :key="t.id" class="flex items-center px-4 py-3 cursor-pointer" @click="editing = t">
         <span class="w-8 text-center text-lg">{{ categoryMeta(t.category, t.type).icon }}</span>
