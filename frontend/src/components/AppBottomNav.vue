@@ -11,15 +11,16 @@ function isActive(tabName) {
 }
 
 const itemClass = (tabName) => [
-  'flex items-center justify-center flex-1 py-2.5',
-  isActive(tabName) ? 'text-green-700' : 'text-gray-400',
+  'flex flex-col items-center justify-center gap-0.5 flex-1 min-w-0 py-1.5 rounded-2xl transition-colors',
+  isActive(tabName) ? 'bg-green-100 text-green-700' : 'text-gray-400',
 ]
 </script>
 
 <template>
-  <nav class="glass sm:hidden fixed bottom-0 inset-x-0 bg-white/75 backdrop-blur-xl border-t border-white/40 z-20 flex">
-    <router-link v-for="item in items" :key="item.name" :to="{ name: item.name }" :class="itemClass(item.name)" :title="item.label" :aria-label="item.label">
-      <span class="text-xl leading-none">{{ item.icon }}</span>
+  <nav class="glass sm:hidden fixed bottom-3 inset-x-3 z-20 bg-white/80 backdrop-blur-xl rounded-[28px] border border-white/40 flex px-1 py-1">
+    <router-link v-for="item in items" :key="item.name" :to="{ name: item.name }" :class="itemClass(item.name)">
+      <span class="text-lg leading-none">{{ item.icon }}</span>
+      <span class="text-[9px] leading-none font-medium truncate max-w-full px-0.5">{{ item.label }}</span>
     </router-link>
   </nav>
 </template>

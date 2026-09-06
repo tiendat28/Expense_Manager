@@ -23,7 +23,7 @@ onMounted(() => {
     <AppHeader />
     <div class="flex flex-1 min-h-0">
       <AppSidebar />
-      <main class="flex-1 overflow-y-auto overflow-x-hidden pb-16 sm:pb-0">
+      <main class="flex-1 overflow-y-auto overflow-x-hidden pb-24 sm:pb-0">
         <router-view />
       </main>
     </div>
