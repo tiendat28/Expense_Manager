@@ -131,7 +131,7 @@ onMounted(async () => {
     </div>
     <p v-else class="text-gray-900 text-sm text-center py-6">Không có chi tiêu nào trong tháng này</p>
 
-    <button @click="showAdd = true" class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-green-600 text-white text-2xl shadow-lg hover:bg-green-700">+</button>
+    <button @click="showAdd = true" class="fixed bottom-20 sm:bottom-6 right-6 w-14 h-14 rounded-full bg-green-600 text-white text-2xl shadow-lg hover:bg-green-700">+</button>
     <TransactionFormModal v-if="showAdd" @close="showAdd = false" @saved="tx.refreshAll(); showAdd = false" />
   </PageShell>
 </template>

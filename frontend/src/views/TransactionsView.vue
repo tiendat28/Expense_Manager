@@ -48,7 +48,7 @@ onMounted(() => tx.refreshAll())
       </div>
     </div>
 
-    <button @click="showAdd = true" class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-green-600 text-white text-2xl shadow-lg">+</button>
+    <button @click="showAdd = true" class="fixed bottom-20 sm:bottom-6 right-6 w-14 h-14 rounded-full bg-green-600 text-white text-2xl shadow-lg">+</button>
     <TransactionFormModal v-if="showAdd" @close="showAdd = false" @saved="showAdd = false" />
     <TransactionFormModal v-if="editing" :existing="editing" @close="editing = null" @saved="editing = null" />
   </PageShell>

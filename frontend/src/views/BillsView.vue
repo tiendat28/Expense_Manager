@@ -20,6 +20,10 @@ onMounted(() => store.fetchAll())
 
 <template>
   <PageShell>
+    <template #sticky>
+      <h1 class="text-xl sm:text-2xl font-bold text-green-800">Hóa đơn</h1>
+    </template>
+
     <p v-if="!store.items.length" class="text-center text-gray-900 py-10 text-sm">Chưa có hóa đơn định kỳ nào. Nhấn + để thêm.</p>
     <div class="bg-white rounded-2xl divide-y">
       <div v-for="bill in store.items" :key="bill.id" class="flex items-center px-4 py-3">
@@ -36,7 +40,7 @@ onMounted(() => store.fetchAll())
       </div>
     </div>
 
-    <button @click="showAdd = true" class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-green-600 text-white text-2xl shadow-lg">+</button>
+    <button @click="showAdd = true" class="fixed bottom-20 sm:bottom-6 right-6 w-14 h-14 rounded-full bg-green-600 text-white text-2xl shadow-lg">+</button>
     <BillFormModal v-if="showAdd" @close="showAdd = false" @saved="showAdd = false" />
     <BillFormModal v-if="editing" :existing="editing" @close="editing = null" @saved="editing = null" />
   </PageShell>
