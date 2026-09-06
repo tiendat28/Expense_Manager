@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.routers import auth, transactions, savings, debts, bills, budgets, backup
+from app.routers import auth, transactions, savings, debts, bills, budgets, backup, gift_money
 
 app = FastAPI(title="Expense Tracker API")
 
@@ -20,6 +20,7 @@ app.include_router(debts.router)
 app.include_router(bills.router)
 app.include_router(budgets.router)
 app.include_router(backup.router)
+app.include_router(gift_money.router)
 
 
 @app.get("/")

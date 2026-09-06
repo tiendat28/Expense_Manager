@@ -4,6 +4,7 @@ export const navTabs = [
   { name: 'savings', label: 'Tiết kiệm', icon: '🎯' },
   { name: 'debts', label: 'Sổ nợ', icon: '🤝' },
   { name: 'bills', label: 'Hóa đơn', icon: '🧾' },
+  { name: 'giftmoney', label: 'Tiền mừng', icon: '🎁' },
   { name: 'budget', label: 'Ngân sách', icon: '🧮' },
 ]
 

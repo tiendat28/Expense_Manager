@@ -13,6 +13,7 @@ const routes = [
   { path: '/bills', name: 'bills', component: () => import('../views/BillsView.vue') },
   { path: '/budget', name: 'budget', component: () => import('../views/BudgetView.vue') },
   { path: '/settings', name: 'settings', component: () => import('../views/SettingsView.vue') },
+  { path: '/giftmoney', name: 'giftmoney', component: () => import('../views/GiftMoneyView.vue') },
 ]
 
 const router = createRouter({

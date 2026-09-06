@@ -19,3 +19,4 @@ class User(Base):
     debts = relationship("DebtRecord", back_populates="user", cascade="all, delete-orphan")
     bills = relationship("RecurringBill", back_populates="user", cascade="all, delete-orphan")
     category_budgets = relationship("CategoryBudget", back_populates="user", cascade="all, delete-orphan")
+    gift_money_records = relationship("GiftMoneyRecord", back_populates="user", cascade="all, delete-orphan")

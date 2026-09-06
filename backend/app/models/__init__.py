@@ -4,3 +4,4 @@ from app.models.savings import SavingsGoal, SavingsContribution
 from app.models.debt import DebtRecord, DebtType
 from app.models.bill import RecurringBill
 from app.models.budget import CategoryBudget
+from app.models.gift_money import GiftMoneyRecord, GiftMoneyType
