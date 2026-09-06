@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useDebtsStore } from '../stores/debts'
 import { useToastStore } from '../stores/toast'
 import AmountField from './AmountField.vue'
+import ModalShell from './ModalShell.vue'
 
 const props = defineProps({ debt: Object, existing: { type: Object, default: null } })
 const emit = defineEmits(['close', 'saved'])
@@ -11,6 +12,9 @@ const toast = useToastStore()
 
 const amount = ref(props.existing?.amount ?? '')
 const date = ref(props.existing ? props.existing.date.slice(0, 16) : new Date().toISOString().slice(0, 16))
+const title = computed(() => props.existing
+  ? 'Sửa lần thanh toán'
+  : (props.debt.type === 'owe' ? `Ghi nhận đã trả cho "${props.debt.person_name}"` : `Ghi nhận đã thu từ "${props.debt.person_name}"`))
 
 async function save() {
   const payload = { amount: Number(amount.value), date: date.value }
@@ -29,14 +33,7 @@ async function remove() {
 </script>
 
 <template>
-  <div class="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-30" @click.self="$emit('close')">
-    <div class="bg-white rounded-2xl w-full sm:max-w-md p-5 space-y-4 max-h-[85vh] overflow-y-auto">
-      <h2 class="font-semibold text-lg">
-        {{ existing
-          ? 'Sửa lần thanh toán'
-          : (debt.type === 'owe' ? `Ghi nhận đã trả cho "${debt.person_name}"` : `Ghi nhận đã thu từ "${debt.person_name}"`)
-        }}
-      </h2>
+  <ModalShell :title="title" @close="$emit('close')">
       <AmountField v-model="amount" />
       <input v-model="date" type="datetime-local" class="w-full border rounded-lg px-3 py-2" />
       <div class="flex gap-2 pt-2">
@@ -44,6 +41,5 @@ async function remove() {
         <button @click="save" class="flex-1 py-2 rounded-lg bg-green-600 text-white">Lưu</button>
       </div>
       <button v-if="existing" @click="remove" class="w-full text-red-500 text-sm py-2">Xóa lần thanh toán này</button>
-    </div>
-  </div>
+  </ModalShell>
 </template>

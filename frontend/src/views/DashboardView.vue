@@ -8,6 +8,8 @@ import MonthlyTrendChart from '../components/MonthlyTrendChart.vue'
 import CategoryDonutChart from '../components/CategoryDonutChart.vue'
 import TransactionFormModal from '../components/TransactionFormModal.vue'
 import PageShell from '../components/PageShell.vue'
+import FabButton from '../components/FabButton.vue'
+import PageTitle from '../components/PageTitle.vue'
 
 const tx = useTransactionsStore()
 const budget = useBudgetStore()
@@ -49,7 +51,7 @@ onMounted(async () => {
   <PageShell>
     <template #sticky>
       <div class="flex items-center justify-between flex-wrap gap-2">
-        <h1 class="text-xl sm:text-2xl font-bold text-green-800">Tổng quan tài chính</h1>
+        <PageTitle text="Tổng quan tài chính" />
         <div class="flex items-center gap-2 bg-white rounded-full shadow-sm px-1 py-1">
           <select
             v-model.number="tx.selectedMonth"
@@ -131,7 +133,7 @@ onMounted(async () => {
     </div>
     <p v-else class="text-gray-900 text-sm text-center py-6">Không có chi tiêu nào trong tháng này</p>
 
-    <button @click="showAdd = true" class="glass-fab fixed bottom-20 sm:bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-green-700 text-white text-2xl hover:brightness-110">+</button>
+    <FabButton @click="showAdd = true" />
     <TransactionFormModal v-if="showAdd" @close="showAdd = false" @saved="tx.refreshAll(); showAdd = false" />
   </PageShell>
 </template>

@@ -4,6 +4,7 @@ import { useTransactionsStore } from '../stores/transactions'
 import { formatVND, categoryMeta } from '../utils/formatters'
 import TransactionFormModal from '../components/TransactionFormModal.vue'
 import PageShell from '../components/PageShell.vue'
+import FabButton from '../components/FabButton.vue'
 
 const tx = useTransactionsStore()
 const filter = ref('all')
@@ -48,7 +49,7 @@ onMounted(() => tx.refreshAll())
       </div>
     </div>
 
-    <button @click="showAdd = true" class="glass-fab fixed bottom-20 sm:bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-green-700 text-white text-2xl hover:brightness-110">+</button>
+    <FabButton @click="showAdd = true" />
     <TransactionFormModal v-if="showAdd" @close="showAdd = false" @saved="showAdd = false" />
     <TransactionFormModal v-if="editing" :existing="editing" @close="editing = null" @saved="editing = null" />
   </PageShell>

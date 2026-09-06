@@ -4,6 +4,7 @@ import { useDebtsStore } from '../stores/debts'
 import { useToastStore } from '../stores/toast'
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../utils/formatters'
 import AmountField from './AmountField.vue'
+import ModalShell from './ModalShell.vue'
 
 const props = defineProps({ existing: { type: Object, default: null } })
 const emit = defineEmits(['close', 'saved'])
@@ -49,10 +50,7 @@ async function remove() {
 </script>
 
 <template>
-  <div class="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-30" @click.self="$emit('close')">
-    <div class="bg-white rounded-2xl w-full sm:max-w-md p-5 space-y-4 max-h-[85vh] overflow-y-auto">
-      <h2 class="font-semibold text-lg">{{ existing ? 'Sửa khoản nợ' : 'Khoản nợ mới' }}</h2>
-
+  <ModalShell :title="existing ? 'Sửa khoản nợ' : 'Khoản nợ mới'" @close="$emit('close')">
       <div class="flex rounded-lg overflow-hidden border">
         <button class="flex-1 py-2 text-sm" :class="type === 'owe' ? 'bg-red-500 text-white' : ''" @click="switchType('owe')">Tôi nợ</button>
         <button class="flex-1 py-2 text-sm" :class="type === 'lent' ? 'bg-green-500 text-white' : ''" @click="switchType('lent')">Cho vay</button>
@@ -83,6 +81,5 @@ async function remove() {
         <button @click="save" class="flex-1 py-2 rounded-lg bg-green-600 text-white">Lưu</button>
       </div>
       <button v-if="existing" @click="remove" class="w-full text-red-500 text-sm py-2">Xóa khoản nợ này</button>
-    </div>
-  </div>
+  </ModalShell>
 </template>

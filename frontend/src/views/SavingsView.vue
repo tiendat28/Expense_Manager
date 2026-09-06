@@ -4,6 +4,8 @@ import { useSavingsStore } from '../stores/savings'
 import { formatVND } from '../utils/formatters'
 import SavingsGoalFormModal from '../components/SavingsGoalFormModal.vue'
 import PageShell from '../components/PageShell.vue'
+import FabButton from '../components/FabButton.vue'
+import PageTitle from '../components/PageTitle.vue'
 
 const store = useSavingsStore()
 const showAdd = ref(false)
@@ -21,7 +23,7 @@ onMounted(() => store.fetchAll())
 <template>
   <PageShell>
     <template #sticky>
-      <h1 class="text-xl sm:text-2xl font-bold text-green-800">Tiết kiệm</h1>
+      <PageTitle text="Tiết kiệm" />
     </template>
 
     <p v-if="!store.goals.length" class="text-center text-gray-900 py-10 text-sm">Chưa có mục tiêu tiết kiệm nào. Nhấn + để tạo.</p>
@@ -44,7 +46,7 @@ onMounted(() => store.fetchAll())
       </router-link>
     </div>
 
-    <button @click="showAdd = true" class="glass-fab fixed bottom-20 sm:bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-green-700 text-white text-2xl hover:brightness-110">+</button>
+    <FabButton @click="showAdd = true" />
     <SavingsGoalFormModal v-if="showAdd" @close="showAdd = false" @saved="showAdd = false" />
   </PageShell>
 </template>
