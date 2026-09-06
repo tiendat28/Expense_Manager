@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .glass {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+      0 8px 32px 0 rgba(0, 0, 0, 0.12),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  .glass-fab {
+    box-shadow:
+      0 10px 25px -5px rgba(22, 101, 52, 0.45),
+      0 8px 10px -6px rgba(22, 101, 52, 0.35),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -2px 4px 0 rgba(0, 0, 0, 0.15);
+  }
+}

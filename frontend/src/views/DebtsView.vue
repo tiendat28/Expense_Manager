@@ -72,7 +72,7 @@ onMounted(() => store.fetchAll())
       </div>
     </div>
 
-    <button @click="showAdd = true" class="fixed bottom-20 sm:bottom-6 right-6 w-14 h-14 rounded-full bg-green-600 text-white text-2xl shadow-lg">+</button>
+    <button @click="showAdd = true" class="glass-fab fixed bottom-20 sm:bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-green-700 text-white text-2xl hover:brightness-110">+</button>
     <DebtFormModal v-if="showAdd" @close="showAdd = false" @saved="showAdd = false" />
   </PageShell>
 </template>

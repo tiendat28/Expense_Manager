@@ -12,7 +12,7 @@ function logout() {
 </script>
 
 <template>
-  <header class="bg-green-700 text-white sticky top-0 z-20">
+  <header class="glass bg-green-700/85 backdrop-blur-xl text-white sticky top-0 z-20">
     <div class="flex items-center justify-between px-4 py-3">
       <div class="flex items-center gap-2">
         <span class="text-2xl">💰</span>

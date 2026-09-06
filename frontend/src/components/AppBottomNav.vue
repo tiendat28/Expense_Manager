@@ -17,7 +17,7 @@ const itemClass = (tabName) => [
 </script>
 
 <template>
-  <nav class="sm:hidden fixed bottom-0 inset-x-0 bg-white border-t z-20 flex">
+  <nav class="glass sm:hidden fixed bottom-0 inset-x-0 bg-white/75 backdrop-blur-xl border-t border-white/40 z-20 flex">
     <router-link v-for="item in items" :key="item.name" :to="{ name: item.name }" :class="itemClass(item.name)" :title="item.label" :aria-label="item.label">
       <span class="text-xl leading-none">{{ item.icon }}</span>
     </router-link>
