@@ -26,7 +26,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl p-5 shadow-sm">
+  <div class="bg-white rounded-2xl p-5 card-shadow">
     <h2 class="font-semibold mb-3">Ngân sách</h2>
     <label class="text-xs text-gray-900">Ngân sách tổng theo tháng</label>
     <input v-model="overall" type="number" class="w-full border rounded-lg px-3 py-2 mb-3" />

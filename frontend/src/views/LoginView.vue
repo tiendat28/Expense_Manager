@@ -26,7 +26,7 @@ async function submit() {
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-    <form @submit.prevent="submit" class="bg-white p-8 rounded-2xl shadow-sm w-full max-w-sm space-y-4">
+    <form @submit.prevent="submit" class="bg-white p-8 rounded-2xl card-shadow w-full max-w-sm space-y-4">
       <h1 class="text-2xl font-bold text-center">Đăng nhập</h1>
       <input v-model="email" type="email" placeholder="Email" required class="w-full border rounded-lg px-3 py-2" />
       <input v-model="password" type="password" placeholder="Mật khẩu" required class="w-full border rounded-lg px-3 py-2" />

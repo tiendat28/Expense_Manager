@@ -51,7 +51,7 @@ async function exportCSV() {
 
 <template>
   <PageShell>
-    <div class="bg-white rounded-2xl p-5 shadow-sm space-y-2">
+    <div class="bg-white rounded-2xl p-5 card-shadow space-y-2">
       <h2 class="font-semibold">Sao lưu dữ liệu</h2>
       <button @click="exportBackup" class="w-full border rounded-lg py-2 text-sm">Xuất file backup (.json)</button>
       <label class="w-full border rounded-lg py-2 text-sm block text-center cursor-pointer">
@@ -61,7 +61,7 @@ async function exportCSV() {
       <p v-if="importMessage" class="text-xs text-gray-900">{{ importMessage }}</p>
     </div>
 
-    <div class="bg-white rounded-2xl p-5 shadow-sm space-y-2">
+    <div class="bg-white rounded-2xl p-5 card-shadow space-y-2">
       <h2 class="font-semibold">Xuất báo cáo Excel</h2>
       <button @click="exportCSV" class="w-full border rounded-lg py-2 text-sm">Xuất file Excel (.csv) — tháng này</button>
       <p class="text-xs text-gray-900">File .csv mở trực tiếp được bằng Excel, Numbers, Google Sheets.</p>
