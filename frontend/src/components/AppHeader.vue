@@ -22,9 +22,14 @@ function logout() {
         <span class="hidden sm:inline text-sm text-green-50">{{ auth.user?.name || auth.user?.email || '' }}</span>
         <button
           @click="logout"
-          class="text-sm bg-green-800/60 hover:bg-green-800 rounded-full px-3 py-1.5 transition-colors"
+          title="Đăng xuất"
+          aria-label="Đăng xuất"
+          class="bg-green-800/60 hover:bg-green-800 rounded-full p-2 transition-colors"
         >
-          Đăng xuất
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+            <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+            <line x1="12" y1="2" x2="12" y2="12" />
+          </svg>
         </button>
       </div>
     </div>
