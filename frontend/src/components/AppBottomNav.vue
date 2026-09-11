@@ -1,11 +1,17 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { primaryTabs, moreTabs, settingsTab } from '../navTabs'
+import { useFabStore } from '../stores/fab'
 
 const route = useRoute()
+const router = useRouter()
+const fab = useFabStore()
 const showMore = ref(false)
 const moreItems = [...moreTabs, settingsTab]
+
+const leftTabs = primaryTabs.slice(0, 2)
+const rightTabs = primaryTabs.slice(2)
 
 function isActive(tabName) {
   return route.name === tabName || (tabName === 'savings' && route.name === 'savings-detail') ||
@@ -23,6 +29,12 @@ const moreButtonClass = computed(() => [
   'flex flex-col items-center justify-center gap-0.5 flex-1 min-w-0 py-1.5 rounded-2xl transition-colors',
   isMoreActive.value ? 'bg-green-100 text-green-700' : 'text-gray-400',
 ])
+
+function onAdd() {
+  showMore.value = false
+  if (fab.handler) fab.trigger()
+  else router.push({ name: 'transactions', query: { add: '1' } })
+}
 </script>
 
 <template>
@@ -42,11 +54,23 @@ const moreButtonClass = computed(() => [
     </router-link>
   </div>
 
-  <nav class="glass sm:hidden fixed bottom-3 inset-x-3 z-20 bg-white/80 backdrop-blur-xl rounded-[28px] border border-white/40 flex px-1 py-1">
-    <router-link v-for="item in primaryTabs" :key="item.name" :to="{ name: item.name }" :class="itemClass(item.name)">
+  <nav class="glass sm:hidden fixed bottom-3 inset-x-3 z-20 bg-white/80 backdrop-blur-xl rounded-[28px] border border-white/40 flex items-center px-1 py-1">
+    <router-link v-for="item in leftTabs" :key="item.name" :to="{ name: item.name }" :class="itemClass(item.name)">
       <span class="text-lg leading-none">{{ item.icon }}</span>
       <span class="text-[9px] leading-none font-medium truncate max-w-full px-0.5">{{ item.label }}</span>
     </router-link>
+
+    <button type="button" class="flex-1 min-w-0 flex justify-center" aria-label="Thêm mới" @click="onAdd">
+      <span
+        class="glass-fab -mt-6 w-[52px] h-[52px] rounded-full bg-gradient-to-br from-green-500 to-green-700 text-white text-2xl leading-none flex items-center justify-center"
+      >+</span>
+    </button>
+
+    <router-link v-for="item in rightTabs" :key="item.name" :to="{ name: item.name }" :class="itemClass(item.name)">
+      <span class="text-lg leading-none">{{ item.icon }}</span>
+      <span class="text-[9px] leading-none font-medium truncate max-w-full px-0.5">{{ item.label }}</span>
+    </router-link>
+
     <button type="button" :class="moreButtonClass" @click="showMore = !showMore">
       <span class="text-lg leading-none">☰</span>
       <span class="text-[9px] leading-none font-medium truncate max-w-full px-0.5">Thêm</span>
