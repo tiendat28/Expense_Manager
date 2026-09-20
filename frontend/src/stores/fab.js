@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-// Lets the mobile bottom nav "+" trigger the add action of whichever page is open.
+// Cho nút "+" ở thanh điều hướng mobile gọi được hành động thêm mới của trang đang mở.
 export const useFabStore = defineStore('fab', {
   state: () => ({ handler: null }),
   actions: {
@@ -10,8 +10,11 @@ export const useFabStore = defineStore('fab', {
     unregister(fn) {
       if (this.handler === fn) this.handler = null
     },
+    // Trả về true nếu trang hiện tại có đăng ký hành động thêm mới.
     trigger() {
-      if (this.handler) this.handler()
+      if (!this.handler) return false
+      this.handler()
+      return true
     },
   },
 })

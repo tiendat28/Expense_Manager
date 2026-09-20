@@ -14,3 +14,13 @@ export const moreTabs = [
 export const settingsTab = { name: 'settings', label: 'Cài đặt', icon: '⚙️' }
 
 export const navTabs = [...primaryTabs, ...moreTabs]
+
+// Trang chi tiết vẫn phải làm sáng tab cha của nó trên sidebar và thanh điều hướng.
+const CHILD_ROUTES = {
+  savings: ['savings-detail'],
+  debts: ['debt-detail'],
+}
+
+export function isTabActive(tabName, routeName) {
+  return routeName === tabName || (CHILD_ROUTES[tabName] || []).includes(routeName)
+}

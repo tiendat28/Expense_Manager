@@ -3,13 +3,6 @@ export function formatVND(value) {
   return n.toLocaleString('vi-VN') + ' đ'
 }
 
-export function shortVND(value) {
-  const n = Number(value) || 0
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'tr'
-  if (n >= 1_000) return Math.round(n / 1_000) + 'k'
-  return String(Math.round(n))
-}
-
 export const EXPENSE_CATEGORIES = [
   { value: 'Ăn uống', icon: '🍽️', color: '#f97316' },
   { value: 'Di chuyển', icon: '🚗', color: '#3b82f6' },
