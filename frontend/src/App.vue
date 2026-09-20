@@ -6,6 +6,7 @@ import AppHeader from './components/AppHeader.vue'
 import AppSidebar from './components/AppSidebar.vue'
 import AppBottomNav from './components/AppBottomNav.vue'
 import ToastContainer from './components/ToastContainer.vue'
+import ConfirmDialog from './components/ConfirmDialog.vue'
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -33,4 +34,5 @@ onMounted(() => {
     <router-view />
   </div>
   <ToastContainer />
+  <ConfirmDialog />
 </template>
