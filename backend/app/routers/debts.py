@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -85,14 +85,14 @@ def add_payment(debt_id: int, payload: DebtPayment, db: Session = Depends(get_db
         amount=payload.amount,
         category=debt.category or "Khác",
         note=_transaction_note(debt),
-        date=(payload.date or datetime.utcnow()).date(),
+        date=(payload.date or datetime.now(timezone.utc)).date(),
         type=TransactionType.expense if debt.type.value == "owe" else TransactionType.income,
     )
     db.add(tx)
     db.flush()
 
     payment = DebtPaymentRecord(
-        debt_id=debt.id, amount=payload.amount, date=payload.date or datetime.utcnow(), transaction_id=tx.id
+        debt_id=debt.id, amount=payload.amount, date=payload.date or datetime.now(timezone.utc), transaction_id=tx.id
     )
     db.add(payment)
 

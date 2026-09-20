@@ -11,21 +11,23 @@
 ## Cấu trúc project
 
 ```
-webapp/
+expense_tracker/
 ├── backend/            FastAPI + SQLAlchemy + Alembic (Postgres)
 │   ├── app/
 │   │   ├── core/        cấu hình, bảo mật, JWT
 │   │   ├── models/       model SQLAlchemy
-│   │   ├── routers/      endpoint API (auth, transactions, budgets, bills, debts, savings, backup)
-│   │   ├── schemas/      schema Pydantic
-│   │   └── services/     logic nghiệp vụ
+│   │   ├── routers/      endpoint API (auth, transactions, budgets, bills, debts, savings, gift-money, backup)
+│   │   └── schemas/      schema Pydantic
 │   └── alembic/          migration database
 ├── frontend/            Vue 3 + Tailwind + Pinia + ApexCharts
 │   └── src/
 │       ├── api/          client gọi API (axios)
-│       ├── components/   component dùng lại (form, chart, modal...)
-│       ├── stores/        Pinia store (auth, transactions, budget, bills, debts, savings)
-│       └── views/         các trang (Dashboard, Transactions, Bills, Debts, Savings, Settings...)
+│       ├── components/   component dùng lại (form, chart, modal, bảng...)
+│       ├── composables/   logic dùng chung (phân trang, xác nhận xóa, form đăng nhập)
+│       ├── router/       khai báo route + chặn trang khi chưa đăng nhập
+│       ├── stores/        Pinia store (auth, transactions, budget, bills, debts, savings, giftMoney, toast, confirm)
+│       ├── utils/         hàm thuần (định dạng tiền, ngày giờ, phần trăm, tải file)
+│       └── views/         các trang (Dashboard, Transactions, Bills, Debts, Savings, GiftMoney, Settings...)
 └── docker-compose.yml
 ```
 
@@ -47,7 +49,7 @@ webapp/
 Yêu cầu **Docker Desktop** đã cài và đang chạy.
 
 ```bash
-cd webapp
+cd expense_tracker
 cp backend/.env.example backend/.env
 ```
 
@@ -155,3 +157,42 @@ alembic downgrade -1
 - **CORS error khi gọi API từ frontend**: kiểm tra `CORS_ORIGINS` ở backend đã đúng domain frontend chưa, restart lại backend sau khi sửa.
 - **401 liên tục dù vừa đăng nhập**: token hết hạn hoặc `SECRET_KEY` bị đổi sau khi token đã phát hành — đăng nhập lại.
 - **Bảng không tồn tại sau khi deploy**: quên chạy `alembic upgrade head` trên môi trường mới.
+- **Dữ liệu "biến mất" sau khi đổi tên hoặc di chuyển thư mục project**: dữ liệu vẫn còn, chỉ là Compose đang nhìn sang volume khác. Docker Compose lấy **tên thư mục** làm tên project, và tên volume là `<tên project>_db_data`. Đổi thư mục `webapp/` thành `expense_tracker/` là Compose tạo một volume mới rỗng, còn dữ liệu cũ nằm nguyên trong `webapp_db_data`. Xem có những volume nào:
+
+  ```bash
+  docker volume ls | grep db_data
+  ```
+
+  Lấy lại bằng một trong hai cách:
+
+  1. **Chạy dưới tên project cũ** — nhanh, nhưng phải nhớ gõ `-p` mãi về sau:
+
+     ```bash
+     docker compose -p webapp up -d
+     ```
+
+  2. **Chuyển hẳn dữ liệu sang volume mới** — dứt điểm. Mở một Postgres tạm trỏ vào volume cũ để dump ra, rồi nạp vào volume đang dùng:
+
+     ```bash
+     docker run --rm -d --name tmp_pg -e POSTGRES_PASSWORD=postgres -v webapp_db_data:/var/lib/postgresql/data postgres:16-alpine
+     docker exec tmp_pg pg_dump -U postgres -Fc -f /tmp/old.dump expense_tracker
+     docker cp tmp_pg:/tmp/old.dump ./old.dump
+     docker stop tmp_pg
+
+     docker cp ./old.dump expense_tracker-db-1:/tmp/old.dump
+     docker compose exec -T db pg_restore -U postgres -d expense_tracker --data-only --disable-triggers /tmp/old.dump
+     ```
+
+     Trên Windows, nếu chạy bằng **Git Bash** thì phải thêm `MSYS_NO_PATHCONV=1` vào đầu các lệnh trên, nếu không Git Bash sẽ tự đổi `/tmp/old.dump` thành đường dẫn Windows và `pg_dump` báo `could not open output file`. Dùng PowerShell hoặc CMD thì không cần.
+
+     `--data-only` chỉ nạp dữ liệu chứ không tạo bảng, nên các bảng ở volume mới phải đang **rỗng** (schema thì đã có sẵn do `alembic upgrade head` chạy lúc container khởi động). Giữ lại `old.dump` và volume cũ cho tới khi dùng vài hôm thấy chắc chắn ổn, rồi mới `docker volume rm webapp_db_data`.
+
+  Lưu ý: `docker compose down` **không** xóa dữ liệu. Chỉ `docker compose down -v` mới xóa volume.
+
+- **`Bind for 0.0.0.0:5173 failed: port is already allocated`**: một project Docker khác đang giữ cổng đó — hay gặp vì các project thường để `restart: unless-stopped` nên tự bật lại cùng Docker Desktop. Xem ai đang giữ:
+
+  ```bash
+  docker ps --format '{{.Names}}\t{{.Ports}}'
+  ```
+
+  Rồi hoặc dừng project kia, hoặc đổi cổng của project này trong `docker-compose.yml` (nhớ thêm cổng mới vào `CORS_ORIGINS` ở `backend/.env`, nếu không frontend sẽ bị chặn CORS).
