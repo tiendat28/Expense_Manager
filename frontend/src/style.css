@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Trên iOS, <input type="date"> và datetime-local được vẽ bằng form control riêng của hệ
+     điều hành: nền xám, chữ căn giữa, và chiều rộng tự tính theo nội dung nên phá vỡ
+     width:100% rồi tràn ra ngoài modal. Desktop và Chromium không bị.
+     Tắt kiểu native đi để chúng trông và co giãn đúng như các ô nhập khác. */
+  input[type='date'],
+  input[type='datetime-local'] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    /* iOS căn giữa nội dung, các ô còn lại căn trái */
+    text-align: left;
+    background-color: #fff;
+    /* Khi bỏ kiểu native, ô rỗng có thể bị tụt chiều cao so với các ô khác */
+    min-height: 2.625rem;
+  }
+
+  /* Bỏ nút lịch mặc định để chiều rộng do CSS quyết định, chạm vào ô vẫn mở được bộ chọn ngày */
+  input[type='date']::-webkit-calendar-picker-indicator,
+  input[type='datetime-local']::-webkit-calendar-picker-indicator {
+    margin: 0;
+  }
+
+  input[type='date']::-webkit-date-and-time-value,
+  input[type='datetime-local']::-webkit-date-and-time-value {
+    text-align: left;
+  }
+}
+
 @layer utilities {
   .glass {
     backdrop-filter: blur(20px) saturate(180%);
