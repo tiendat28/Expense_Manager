@@ -2,14 +2,17 @@
 import { ref } from 'vue'
 import { useBillsStore } from '../stores/bills'
 import { useToastStore } from '../stores/toast'
+import { useConfirmDelete } from '../composables/useConfirmDelete'
 import { EXPENSE_CATEGORIES } from '../utils/formatters'
 import AmountField from './AmountField.vue'
 import ModalShell from './ModalShell.vue'
+import ModalFooter from './ModalFooter.vue'
 
 const props = defineProps({ existing: { type: Object, default: null } })
 const emit = defineEmits(['close', 'saved'])
 const store = useBillsStore()
 const toast = useToastStore()
+const confirmDelete = useConfirmDelete()
 
 const name = ref(props.existing?.name || '')
 const amount = ref(props.existing?.amount ?? '')
@@ -27,8 +30,8 @@ async function save() {
   emit('saved')
 }
 async function remove() {
-  await store.remove(props.existing.id)
-  emit('saved')
+  const deleted = await confirmDelete(`Bạn có chắc chắn muốn xóa hóa đơn "${props.existing.name}"?`, () => store.remove(props.existing.id))
+  if (deleted) emit('saved')
 }
 </script>
 
@@ -43,10 +46,6 @@ async function remove() {
         <label class="text-xs text-gray-900">Ngày nhắc hàng tháng: {{ dueDay }}</label>
         <input v-model="dueDay" type="range" min="1" max="28" class="w-full" />
       </div>
-      <div class="flex gap-2 pt-2">
-        <button @click="$emit('close')" class="flex-1 py-2 rounded-lg border">Hủy</button>
-        <button @click="save" class="flex-1 py-2 rounded-lg bg-green-600 text-white">Lưu</button>
-      </div>
-      <button v-if="existing" @click="remove" class="w-full text-red-500 text-sm py-2">Xóa hóa đơn này</button>
+      <ModalFooter :delete-label="existing ? 'Xóa hóa đơn này' : ''" @close="$emit('close')" @save="save" @remove="remove" />
   </ModalShell>
 </template>

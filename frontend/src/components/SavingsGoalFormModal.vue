@@ -4,6 +4,7 @@ import { useSavingsStore } from '../stores/savings'
 import { useToastStore } from '../stores/toast'
 import AmountField from './AmountField.vue'
 import ModalShell from './ModalShell.vue'
+import ModalFooter from './ModalFooter.vue'
 
 const props = defineProps({ existing: { type: Object, default: null } })
 const emit = defineEmits(['close', 'saved'])
@@ -36,9 +37,6 @@ async function save() {
           class="text-2xl w-10 h-10 rounded-full flex items-center justify-center"
           :class="icon === opt ? 'bg-green-100' : ''">{{ opt }}</button>
       </div>
-      <div class="flex gap-2 pt-2">
-        <button @click="$emit('close')" class="flex-1 py-2 rounded-lg border">Hủy</button>
-        <button @click="save" class="flex-1 py-2 rounded-lg bg-green-600 text-white">Lưu</button>
-      </div>
+      <ModalFooter @close="$emit('close')" @save="save" />
   </ModalShell>
 </template>

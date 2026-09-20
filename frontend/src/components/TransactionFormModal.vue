@@ -3,8 +3,10 @@ import { ref } from 'vue'
 import { useTransactionsStore } from '../stores/transactions'
 import { useToastStore } from '../stores/toast'
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../utils/formatters'
+import { todayISO } from '../utils/date'
 import AmountField from './AmountField.vue'
 import ModalShell from './ModalShell.vue'
+import ModalFooter from './ModalFooter.vue'
 
 const props = defineProps({ existing: { type: Object, default: null } })
 const emit = defineEmits(['close', 'saved'])
@@ -15,7 +17,7 @@ const type = ref(props.existing?.type || 'expense')
 const amount = ref(props.existing?.amount ?? '')
 const category = ref(props.existing?.category || EXPENSE_CATEGORIES[0].value)
 const note = ref(props.existing?.note || '')
-const date = ref(props.existing?.date || new Date().toISOString().slice(0, 10))
+const date = ref(props.existing?.date || todayISO())
 
 function currentCategories() {
   return type.value === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES
@@ -40,10 +42,6 @@ async function save() {
   emit('saved')
 }
 
-async function remove() {
-  await tx.remove(props.existing.id)
-  emit('saved')
-}
 </script>
 
 <template>
@@ -62,10 +60,6 @@ async function remove() {
       <input v-model="note" type="text" placeholder="Ghi chú" class="w-full border rounded-lg px-3 py-2" />
       <input v-model="date" type="date" class="w-full border rounded-lg px-3 py-2" />
 
-      <div class="flex gap-2 pt-2">
-        <button @click="$emit('close')" class="flex-1 py-2 rounded-lg border">Hủy</button>
-        <button @click="save" class="flex-1 py-2 rounded-lg bg-green-600 text-white">Lưu</button>
-      </div>
-      <button v-if="existing" @click="remove" class="w-full text-red-500 text-sm py-2">Xóa giao dịch này</button>
+      <ModalFooter @close="$emit('close')" @save="save" />
   </ModalShell>
 </template>

@@ -2,14 +2,18 @@
 import { ref } from 'vue'
 import { useDebtsStore } from '../stores/debts'
 import { useToastStore } from '../stores/toast'
+import { useConfirmDelete } from '../composables/useConfirmDelete'
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../utils/formatters'
+import { todayISO } from '../utils/date'
 import AmountField from './AmountField.vue'
 import ModalShell from './ModalShell.vue'
+import ModalFooter from './ModalFooter.vue'
 
 const props = defineProps({ existing: { type: Object, default: null } })
 const emit = defineEmits(['close', 'saved'])
 const store = useDebtsStore()
 const toast = useToastStore()
+const confirmDelete = useConfirmDelete()
 
 const type = ref(props.existing?.type || 'owe')
 const personName = ref(props.existing?.person_name || '')
@@ -17,7 +21,7 @@ const category = ref(props.existing?.category || currentCategories()[0].value)
 const totalAmount = ref(props.existing?.total_amount ?? '')
 const paidAmount = ref(props.existing?.paid_amount ?? 0)
 const hasDueDate = ref(!!props.existing?.due_date)
-const dueDate = ref(props.existing?.due_date || new Date().toISOString().slice(0, 10))
+const dueDate = ref(props.existing?.due_date || todayISO())
 const note = ref(props.existing?.note || '')
 
 function currentCategories() {
@@ -44,8 +48,8 @@ async function save() {
   emit('saved')
 }
 async function remove() {
-  await store.remove(props.existing.id)
-  emit('saved')
+  const deleted = await confirmDelete(`Bạn có chắc chắn muốn xóa khoản nợ với "${props.existing.person_name}"?`, () => store.remove(props.existing.id))
+  if (deleted) emit('saved')
 }
 </script>
 
@@ -76,10 +80,6 @@ async function remove() {
 
       <input v-model="note" type="text" placeholder="Ghi chú (tùy chọn)" class="w-full border rounded-lg px-3 py-2" />
 
-      <div class="flex gap-2 pt-2">
-        <button @click="$emit('close')" class="flex-1 py-2 rounded-lg border">Hủy</button>
-        <button @click="save" class="flex-1 py-2 rounded-lg bg-green-600 text-white">Lưu</button>
-      </div>
-      <button v-if="existing" @click="remove" class="w-full text-red-500 text-sm py-2">Xóa khoản nợ này</button>
+      <ModalFooter :delete-label="existing ? 'Xóa khoản nợ này' : ''" @close="$emit('close')" @save="save" @remove="remove" />
   </ModalShell>
 </template>

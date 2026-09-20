@@ -3,8 +3,10 @@ import { ref } from 'vue'
 import { useGiftMoneyStore } from '../stores/giftMoney'
 import { useToastStore } from '../stores/toast'
 import { GIFT_MONEY_TYPES } from '../utils/giftMoney'
+import { todayISO } from '../utils/date'
 import AmountField from './AmountField.vue'
 import ModalShell from './ModalShell.vue'
+import ModalFooter from './ModalFooter.vue'
 
 const props = defineProps({ existing: { type: Object, default: null } })
 const emit = defineEmits(['close', 'saved'])
@@ -15,7 +17,7 @@ const name = ref(props.existing?.name || '')
 const address = ref(props.existing?.address || '')
 const amount = ref(props.existing?.amount ?? '')
 const type = ref(props.existing?.type || 'wedding')
-const date = ref(props.existing?.date || new Date().toISOString().slice(0, 10))
+const date = ref(props.existing?.date || todayISO())
 const note = ref(props.existing?.note || '')
 
 async function save() {
@@ -35,10 +37,6 @@ async function save() {
   toast.show('Đã lưu thành công')
   emit('saved')
 }
-async function remove() {
-  await store.remove(props.existing.id)
-  emit('saved')
-}
 </script>
 
 <template>
@@ -51,10 +49,6 @@ async function remove() {
       </select>
       <input v-model="date" type="date" class="w-full border rounded-lg px-3 py-2" />
       <textarea v-model="note" placeholder="Note" rows="2" class="w-full border rounded-lg px-3 py-2"></textarea>
-      <div class="flex gap-2 pt-2">
-        <button @click="$emit('close')" class="flex-1 py-2 rounded-lg border">Hủy</button>
-        <button @click="save" class="flex-1 py-2 rounded-lg bg-green-600 text-white">Lưu</button>
-      </div>
-      <button v-if="existing" @click="remove" class="w-full text-red-500 text-sm py-2">Xóa khoản này</button>
+      <ModalFooter @close="$emit('close')" @save="save" />
   </ModalShell>
 </template>
