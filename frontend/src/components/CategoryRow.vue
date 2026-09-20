@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { formatVND } from '../utils/formatters'
+import { percent as percentOf } from '../utils/progress'
 
 const props = defineProps({
   category: String,
@@ -12,10 +13,7 @@ const props = defineProps({
 
 const hasLimit = computed(() => props.limit && props.limit > 0)
 const isOverLimit = computed(() => hasLimit.value && props.total > props.limit)
-const percent = computed(() => {
-  if (hasLimit.value) return Math.min(props.total / props.limit, 1) * 100
-  return 0
-})
+const percent = computed(() => (hasLimit.value ? percentOf(props.total, props.limit) : 0))
 </script>
 
 <template>

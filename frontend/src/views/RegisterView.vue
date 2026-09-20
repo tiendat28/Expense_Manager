@@ -1,28 +1,17 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useAuthForm } from '../composables/useAuthForm'
 
 const name = ref('')
 const email = ref('')
 const password = ref('')
-const error = ref('')
-const loading = ref(false)
 const auth = useAuthStore()
-const router = useRouter()
 
-async function submit() {
-  error.value = ''
-  loading.value = true
-  try {
-    await auth.register(email.value, password.value, name.value)
-    router.push({ name: 'dashboard' })
-  } catch (e) {
-    error.value = e.response?.data?.detail || 'Đăng ký thất bại'
-  } finally {
-    loading.value = false
-  }
-}
+const { error, loading, submit } = useAuthForm(
+  () => auth.register(email.value, password.value, name.value),
+  'Đăng ký thất bại'
+)
 </script>
 
 <template>

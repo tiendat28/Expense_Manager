@@ -3,6 +3,7 @@ import { onMounted, computed, ref } from 'vue'
 import { useTransactionsStore } from '../stores/transactions'
 import { useBudgetStore } from '../stores/budget'
 import { formatVND, categoryMeta } from '../utils/formatters'
+import { percent } from '../utils/progress'
 import CategoryRow from '../components/CategoryRow.vue'
 import MonthlyTrendChart from '../components/MonthlyTrendChart.vue'
 import CategoryDonutChart from '../components/CategoryDonutChart.vue'
@@ -18,10 +19,7 @@ const showAdd = ref(false)
 const monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
 
 const balance = computed(() => tx.monthlyStats.income_total - tx.monthlyStats.expense_total)
-const progress = computed(() => {
-  if (!budget.monthlyBudget) return 0
-  return Math.min(tx.monthlyStats.expense_total / budget.monthlyBudget, 1) * 100
-})
+const progress = computed(() => percent(tx.monthlyStats.expense_total, budget.monthlyBudget))
 const remaining = computed(() => budget.monthlyBudget - tx.monthlyStats.expense_total)
 
 const yearOptions = computed(() => {
@@ -30,10 +28,6 @@ const yearOptions = computed(() => {
   for (let y = currentYear; y >= currentYear - 5; y--) options.push(y)
   return options
 })
-
-function onChangeMonth() {
-  tx.refreshAll()
-}
 
 function onSelectMonth(item) {
   tx.selectedYear = item.year
@@ -55,14 +49,14 @@ onMounted(async () => {
         <div class="flex items-center gap-2 bg-white rounded-full shadow-sm px-1 py-1">
           <select
             v-model.number="tx.selectedMonth"
-            @change="onChangeMonth"
+            @change="tx.refreshAll()"
             class="text-sm font-semibold text-gray-700 bg-transparent px-2 py-1 border-0 outline-none cursor-pointer"
           >
             <option v-for="(name, i) in monthNames" :key="i" :value="i + 1">{{ name }}</option>
           </select>
           <select
             v-model.number="tx.selectedYear"
-            @change="onChangeMonth"
+            @change="tx.refreshAll()"
             class="text-sm font-semibold text-gray-700 bg-transparent px-2 py-1 border-0 outline-none cursor-pointer"
           >
             <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}</option>

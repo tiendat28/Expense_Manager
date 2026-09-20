@@ -1,6 +1,6 @@
 from datetime import date
 from typing import Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import extract
 from app.database import get_db
@@ -8,9 +8,23 @@ from app.models.user import User
 from app.models.transaction import Transaction, TransactionType
 from app.schemas.transaction import TransactionCreate, TransactionUpdate, TransactionRead
 from app.core.deps import get_current_user
-from fastapi import HTTPException
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
+
+
+def _month_filter(db: Session, user_id: int, year: int, month: int):
+    return db.query(Transaction).filter(
+        Transaction.user_id == user_id,
+        extract("year", Transaction.date) == year,
+        extract("month", Transaction.date) == month,
+    )
+
+
+def _get_tx_or_404(db: Session, tx_id: int, user_id: int) -> Transaction:
+    tx = db.query(Transaction).filter(Transaction.id == tx_id, Transaction.user_id == user_id).first()
+    if not tx:
+        raise HTTPException(status_code=404, detail="Không tìm thấy giao dịch")
+    return tx
 
 
 @router.get("", response_model=list[TransactionRead])
@@ -21,11 +35,7 @@ def list_transactions(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    query = db.query(Transaction).filter(
-        Transaction.user_id == current_user.id,
-        extract("year", Transaction.date) == year,
-        extract("month", Transaction.date) == month,
-    )
+    query = _month_filter(db, current_user.id, year, month)
     if type:
         query = query.filter(Transaction.type == type)
     return query.order_by(Transaction.date.desc()).all()
@@ -51,9 +61,7 @@ def update_transaction(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    tx = db.query(Transaction).filter(Transaction.id == tx_id, Transaction.user_id == current_user.id).first()
-    if not tx:
-        raise HTTPException(status_code=404, detail="Không tìm thấy giao dịch")
+    tx = _get_tx_or_404(db, tx_id, current_user.id)
     for key, value in payload.model_dump().items():
         setattr(tx, key, value)
     db.commit()
@@ -67,9 +75,7 @@ def delete_transaction(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    tx = db.query(Transaction).filter(Transaction.id == tx_id, Transaction.user_id == current_user.id).first()
-    if not tx:
-        raise HTTPException(status_code=404, detail="Không tìm thấy giao dịch")
+    tx = _get_tx_or_404(db, tx_id, current_user.id)
     db.delete(tx)
     db.commit()
     return {"ok": True}
@@ -82,11 +88,7 @@ def monthly_stats(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    txs = db.query(Transaction).filter(
-        Transaction.user_id == current_user.id,
-        extract("year", Transaction.date) == year,
-        extract("month", Transaction.date) == month,
-    ).all()
+    txs = _month_filter(db, current_user.id, year, month).all()
     income_total = sum(float(t.amount) for t in txs if t.type == TransactionType.income)
     expense_total = sum(float(t.amount) for t in txs if t.type == TransactionType.expense)
     category_totals: dict[str, float] = {}
@@ -114,11 +116,8 @@ def trend_stats(
         while m <= 0:
             m += 12
             y -= 1
-        txs = db.query(Transaction).filter(
-            Transaction.user_id == current_user.id,
-            Transaction.type == TransactionType.expense,
-            extract("year", Transaction.date) == y,
-            extract("month", Transaction.date) == m,
+        txs = _month_filter(db, current_user.id, y, m).filter(
+            Transaction.type == TransactionType.expense
         ).all()
         total_amount = sum(float(t.amount) for t in txs)
         result.append({"year": y, "month": m, "total": total_amount})

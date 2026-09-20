@@ -2,20 +2,18 @@
 import { ref, onMounted } from 'vue'
 import { useSavingsStore } from '../stores/savings'
 import { formatVND } from '../utils/formatters'
+import { percent } from '../utils/progress'
+import { savedAmount } from '../utils/savings'
 import SavingsGoalFormModal from '../components/SavingsGoalFormModal.vue'
 import PageShell from '../components/PageShell.vue'
 import FabButton from '../components/FabButton.vue'
 import PageTitle from '../components/PageTitle.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const store = useSavingsStore()
 const showAdd = ref(false)
 
-function savedAmount(goal) {
-  return goal.contributions.reduce((s, c) => s + c.amount, 0)
-}
-function progress(goal) {
-  return goal.target_amount > 0 ? Math.min(savedAmount(goal) / goal.target_amount, 1) * 100 : 0
-}
+const progress = (goal) => percent(savedAmount(goal), goal.target_amount)
 
 onMounted(() => store.fetchAll())
 </script>
@@ -26,8 +24,8 @@ onMounted(() => store.fetchAll())
       <PageTitle text="Tiết kiệm" />
     </template>
 
-    <p v-if="!store.goals.length" class="text-center text-gray-900 py-10 text-sm">Chưa có mục tiêu tiết kiệm nào. Nhấn + để tạo.</p>
-    <div class="space-y-3">
+    <EmptyState v-if="!store.goals.length" text="Chưa có mục tiêu tiết kiệm nào. Nhấn + để tạo." />
+    <div v-else class="space-y-3">
       <router-link
         v-for="goal in store.goals" :key="goal.id" :to="`/savings/${goal.id}`"
         class="block bg-white rounded-2xl card-shadow p-4"

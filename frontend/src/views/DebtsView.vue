@@ -2,23 +2,19 @@
 import { ref, onMounted } from 'vue'
 import { useDebtsStore } from '../stores/debts'
 import { formatVND, categoryMeta } from '../utils/formatters'
+import { percent, remaining as remainingOf } from '../utils/progress'
 import DebtFormModal from '../components/DebtFormModal.vue'
 import PageShell from '../components/PageShell.vue'
 import FabButton from '../components/FabButton.vue'
 import PageTitle from '../components/PageTitle.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const store = useDebtsStore()
 const showAdd = ref(false)
 
-function progress(d) {
-  return d.total_amount > 0 ? Math.min(d.paid_amount / d.total_amount, 1) * 100 : 0
-}
-function remaining(d) {
-  return Math.max(d.total_amount - d.paid_amount, 0)
-}
-function debtCategory(d) {
-  return categoryMeta(d.category, d.type === 'lent' ? 'income' : 'expense')
-}
+const progress = (d) => percent(d.paid_amount, d.total_amount)
+const remaining = (d) => remainingOf(d.total_amount, d.paid_amount)
+const debtCategory = (d) => categoryMeta(d.category, d.type === 'lent' ? 'income' : 'expense')
 
 onMounted(() => store.fetchAll())
 </script>
@@ -29,7 +25,7 @@ onMounted(() => store.fetchAll())
       <PageTitle text="Sổ nợ" />
     </template>
 
-    <p v-if="!store.items.length" class="text-center text-gray-900 py-10 text-sm">Chưa có khoản nợ nào. Nhấn + để thêm.</p>
+    <EmptyState v-if="!store.items.length" text="Chưa có khoản nợ nào. Nhấn + để thêm." />
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
         <h2 class="font-semibold text-red-600 mb-2">Tôi nợ</h2>

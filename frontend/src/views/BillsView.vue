@@ -6,6 +6,7 @@ import BillFormModal from '../components/BillFormModal.vue'
 import PageShell from '../components/PageShell.vue'
 import FabButton from '../components/FabButton.vue'
 import PageTitle from '../components/PageTitle.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const store = useBillsStore()
 const showAdd = ref(false)
@@ -26,8 +27,8 @@ onMounted(() => store.fetchAll())
       <PageTitle text="Hóa đơn" />
     </template>
 
-    <p v-if="!store.items.length" class="text-center text-gray-900 py-10 text-sm">Chưa có hóa đơn định kỳ nào. Nhấn + để thêm.</p>
-    <div class="bg-white rounded-2xl card-shadow divide-y">
+    <EmptyState v-if="!store.items.length" text="Chưa có hóa đơn định kỳ nào. Nhấn + để thêm." />
+    <div v-else class="bg-white rounded-2xl card-shadow divide-y">
       <div v-for="bill in store.items" :key="bill.id" class="flex items-center px-4 py-3">
         <span class="w-8 text-center text-lg">{{ categoryMeta(bill.category, 'expense').icon }}</span>
         <div class="flex-1 ml-2 cursor-pointer" @click="editing = bill">

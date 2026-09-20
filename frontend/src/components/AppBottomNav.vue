@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { primaryTabs, moreTabs, settingsTab } from '../navTabs'
+import { primaryTabs, moreTabs, settingsTab, isTabActive } from '../navTabs'
 import { useFabStore } from '../stores/fab'
 
 const route = useRoute()
@@ -13,10 +13,7 @@ const moreItems = [...moreTabs, settingsTab]
 const leftTabs = primaryTabs.slice(0, 2)
 const rightTabs = primaryTabs.slice(2)
 
-function isActive(tabName) {
-  return route.name === tabName || (tabName === 'savings' && route.name === 'savings-detail') ||
-    (tabName === 'debts' && route.name === 'debt-detail')
-}
+const isActive = (tabName) => isTabActive(tabName, route.name)
 
 const isMoreActive = computed(() => moreItems.some((item) => isActive(item.name)))
 
@@ -32,8 +29,7 @@ const moreButtonClass = computed(() => [
 
 function onAdd() {
   showMore.value = false
-  if (fab.handler) fab.trigger()
-  else router.push({ name: 'transactions', query: { add: '1' } })
+  if (!fab.trigger()) router.push({ name: 'transactions', query: { add: '1' } })
 }
 </script>
 

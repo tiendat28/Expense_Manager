@@ -1,27 +1,16 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useAuthForm } from '../composables/useAuthForm'
 
 const email = ref('')
 const password = ref('')
-const error = ref('')
-const loading = ref(false)
 const auth = useAuthStore()
-const router = useRouter()
 
-async function submit() {
-  error.value = ''
-  loading.value = true
-  try {
-    await auth.login(email.value, password.value)
-    router.push({ name: 'dashboard' })
-  } catch (e) {
-    error.value = e.response?.data?.detail || 'Đăng nhập thất bại'
-  } finally {
-    loading.value = false
-  }
-}
+const { error, loading, submit } = useAuthForm(
+  () => auth.login(email.value, password.value),
+  'Đăng nhập thất bại'
+)
 </script>
 
 <template>

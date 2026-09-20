@@ -1,17 +1,12 @@
 <script setup>
 import { useRoute } from 'vue-router'
-import { navTabs as tabs } from '../navTabs'
+import { navTabs as tabs, isTabActive } from '../navTabs'
 
 const route = useRoute()
 
-function isActive(tabName) {
-  return route.name === tabName || (tabName === 'savings' && route.name === 'savings-detail') ||
-    (tabName === 'debts' && route.name === 'debt-detail')
-}
-
 const linkClass = (tabName) => [
   'flex items-center gap-3 mx-2 mb-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
-  isActive(tabName) ? 'bg-green-50 text-green-700' : 'text-gray-900 hover:bg-gray-50',
+  isTabActive(tabName, route.name) ? 'bg-green-50 text-green-700' : 'text-gray-900 hover:bg-gray-50',
 ]
 </script>
 

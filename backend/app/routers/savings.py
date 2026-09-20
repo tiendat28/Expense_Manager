@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -21,6 +21,15 @@ def _get_goal_or_404(db: Session, goal_id: int, user_id: int) -> SavingsGoal:
     if not goal:
         raise HTTPException(status_code=404, detail="Không tìm thấy mục tiêu")
     return goal
+
+
+def _get_contribution_or_404(db: Session, goal_id: int, contribution_id: int) -> SavingsContribution:
+    contribution = db.query(SavingsContribution).filter(
+        SavingsContribution.id == contribution_id, SavingsContribution.goal_id == goal_id
+    ).first()
+    if not contribution:
+        raise HTTPException(status_code=404, detail="Không tìm thấy lần nạp")
+    return contribution
 
 
 @router.get("", response_model=list[SavingsGoalRead])
@@ -59,7 +68,7 @@ def delete_goal(goal_id: int, db: Session = Depends(get_db), current_user: User 
 def add_contribution(goal_id: int, payload: ContributionCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     goal = _get_goal_or_404(db, goal_id, current_user.id)
     contribution = SavingsContribution(
-        goal_id=goal.id, amount=payload.amount, date=payload.date or datetime.utcnow()
+        goal_id=goal.id, amount=payload.amount, date=payload.date or datetime.now(timezone.utc)
     )
     db.add(contribution)
     db.commit()
@@ -70,11 +79,7 @@ def add_contribution(goal_id: int, payload: ContributionCreate, db: Session = De
 @router.put("/{goal_id}/contributions/{contribution_id}", response_model=ContributionRead)
 def update_contribution(goal_id: int, contribution_id: int, payload: ContributionCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     _get_goal_or_404(db, goal_id, current_user.id)
-    contribution = db.query(SavingsContribution).filter(
-        SavingsContribution.id == contribution_id, SavingsContribution.goal_id == goal_id
-    ).first()
-    if not contribution:
-        raise HTTPException(status_code=404, detail="Không tìm thấy lần nạp")
+    contribution = _get_contribution_or_404(db, goal_id, contribution_id)
     contribution.amount = payload.amount
     if payload.date:
         contribution.date = payload.date
@@ -86,11 +91,7 @@ def update_contribution(goal_id: int, contribution_id: int, payload: Contributio
 @router.delete("/{goal_id}/contributions/{contribution_id}")
 def delete_contribution(goal_id: int, contribution_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     _get_goal_or_404(db, goal_id, current_user.id)
-    contribution = db.query(SavingsContribution).filter(
-        SavingsContribution.id == contribution_id, SavingsContribution.goal_id == goal_id
-    ).first()
-    if not contribution:
-        raise HTTPException(status_code=404, detail="Không tìm thấy lần nạp")
+    contribution = _get_contribution_or_404(db, goal_id, contribution_id)
     db.delete(contribution)
     db.commit()
     return {"ok": True}
