@@ -43,20 +43,35 @@ onMounted(() => {
 
 <template>
   <PageShell>
-    <div v-if="goal">
+    <div v-if="goal" class="space-y-6 max-w-3xl mx-auto">
       <DetailHeader @edit="showEdit = true" @remove="removeGoal" />
 
-      <div class="bg-white rounded-2xl card-shadow p-6 text-center mb-4">
-        <div class="text-4xl mb-2">{{ goal.icon }}</div>
-        <div class="font-semibold text-lg">{{ goal.name }}</div>
-        <div class="text-sm text-gray-900 mb-2">
-          {{ formatVND(savedAmount) }} / {{ formatVND(goal.target_amount) }}
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 text-center card-shadow transition-colors">
+        <div class="text-4xl mb-3">{{ goal.icon || '🎯' }}</div>
+        <h2 class="font-display font-bold text-xl text-slate-900 dark:text-white">{{ goal.name }}</h2>
+
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 mt-4 mb-4 max-w-md mx-auto space-y-2">
+          <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+            <span>Đã tích lũy: <strong class="text-emerald-600 dark:text-emerald-400 font-bold">{{ formatVND(savedAmount) }}</strong></span>
+            <span>Mục tiêu: <strong class="text-slate-800 dark:text-slate-200 font-bold">{{ formatVND(goal.target_amount) }}</strong></span>
+          </div>
+
+          <div class="h-2.5 bg-slate-200/80 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div
+              class="h-full rounded-full progress-bar-fill bg-emerald-500"
+              :style="{ width: Math.min(100, progress) + '%' }"
+            ></div>
+          </div>
+
+          <div class="flex justify-between items-center text-xs pt-1">
+            <span class="text-slate-400">Đã tiết kiệm được {{ daysSaving }} ngày</span>
+            <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ Math.round(progress) }}%</span>
+          </div>
         </div>
-        <div class="h-2 bg-gray-100 rounded-full overflow-hidden mb-2">
-          <div class="h-full bg-green-500 rounded-full" :style="{ width: progress + '%' }"></div>
+
+        <div v-if="progress >= 100" class="text-emerald-600 dark:text-emerald-400 text-sm font-semibold">
+          🎉 Chúc mừng! Bạn đã hoàn thành mục tiêu tích lũy này!
         </div>
-        <div class="text-xs text-gray-900">Đã tiết kiệm được {{ daysSaving }} ngày</div>
-        <div v-if="progress >= 100" class="text-green-600 text-sm mt-1">🎉 Đã đạt mục tiêu!</div>
       </div>
 
       <HistoryList
@@ -67,10 +82,10 @@ onMounted(() => {
       />
 
       <button
-        class="sticky bottom-6 block w-full sm:max-w-md sm:mx-auto bg-green-600 text-white rounded-xl py-3 font-medium"
+        class="block w-full sm:max-w-md sm:mx-auto bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-700 hover:to-green-600 text-white rounded-xl py-3 font-semibold text-sm shadow-md shadow-emerald-500/20 transition cursor-pointer"
         @click="showAddContribution = true"
       >
-        Nạp tiền
+        <i class="fa-solid fa-plus mr-1.5"></i> Nạp thêm tích lũy
       </button>
 
       <SavingsGoalFormModal v-if="showEdit" :existing="goal" @close="showEdit = false" @saved="showEdit = false" />

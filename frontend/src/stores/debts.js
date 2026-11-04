@@ -6,6 +6,7 @@ export const useDebtsStore = defineStore('debts', {
   getters: {
     oweList: (state) => state.items.filter((d) => d.type === 'owe'),
     lentList: (state) => state.items.filter((d) => d.type === 'lent'),
+    unsettledList: (state) => state.items.filter((d) => d.total_amount - d.paid_amount > 0),
     totalOwe: (state) =>
       state.items.filter((d) => d.type === 'owe').reduce((s, d) => s + Math.max(d.total_amount - d.paid_amount, 0), 0),
     totalLent: (state) =>

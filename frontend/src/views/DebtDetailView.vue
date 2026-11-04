@@ -23,8 +23,8 @@ const debt = computed(() => store.items.find((d) => d.id === Number(route.params
 const remaining = computed(() => (debt.value ? remainingOf(debt.value.total_amount, debt.value.paid_amount) : 0))
 const progress = computed(() => (debt.value ? percent(debt.value.paid_amount, debt.value.total_amount) : 0))
 const isOwe = computed(() => debt.value?.type === 'owe')
-const color = computed(() => (isOwe.value ? 'text-red-600' : 'text-green-600'))
-const barColor = computed(() => (remaining.value <= 0 || !isOwe.value ? 'bg-green-500' : 'bg-red-500'))
+const color = computed(() => (isOwe.value ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'))
+const barColor = computed(() => (remaining.value <= 0 || !isOwe.value ? 'bg-emerald-500' : 'bg-rose-500'))
 const category = computed(() =>
   debt.value ? categoryMeta(debt.value.category, isOwe.value ? 'expense' : 'income') : null
 )
@@ -43,25 +43,47 @@ onMounted(() => {
 
 <template>
   <PageShell>
-    <div v-if="debt">
+    <div v-if="debt" class="space-y-6 max-w-3xl mx-auto">
       <DetailHeader @edit="showEdit = true" @remove="removeDebt" />
 
-      <div class="bg-white rounded-2xl card-shadow p-6 text-center mb-4">
-        <div :class="color" class="text-4xl mb-2">{{ isOwe ? '↑' : '↓' }}</div>
-        <div class="font-semibold text-lg">{{ debt.person_name }}</div>
-        <div class="text-sm text-gray-900 mb-3">
-          {{ isOwe ? 'Tôi nợ' : 'Cho vay' }} · {{ category?.icon }} {{ debt.category }}
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 text-center card-shadow transition-colors">
+        <div class="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center text-xl font-bold"
+          :class="isOwe ? 'bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400' : 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400'">
+          <i :class="isOwe ? 'fa-solid fa-file-signature' : 'fa-solid fa-hand-holding-dollar'"></i>
         </div>
-        <div class="text-sm text-gray-900 mb-1">
-          {{ formatVND(debt.paid_amount) }} / {{ formatVND(debt.total_amount) }}
+
+        <h2 class="font-display font-bold text-xl text-slate-900 dark:text-white">{{ debt.person_name }}</h2>
+        <p class="text-xs text-slate-400 mt-1 mb-4">
+          <span class="font-semibold" :class="color">{{ isOwe ? 'Tôi nợ (Đi vay)' : 'Cho vay (Phải thu)' }}</span> • {{ category?.label }}
+        </p>
+
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 mb-4 max-w-md mx-auto space-y-2">
+          <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+            <span>Đã thanh toán: <strong class="text-emerald-600 dark:text-emerald-400 font-bold">{{ formatVND(debt.paid_amount) }}</strong></span>
+            <span>Tổng: <strong class="text-slate-800 dark:text-slate-200 font-bold">{{ formatVND(debt.total_amount) }}</strong></span>
+          </div>
+
+          <div class="h-2 bg-slate-200/80 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div class="h-full rounded-full progress-bar-fill" :class="barColor" :style="{ width: progress + '%' }"></div>
+          </div>
+
+          <div class="flex justify-between items-center text-xs pt-1">
+            <span class="text-slate-400">Tiến độ: {{ Math.round(progress) }}%</span>
+            <span v-if="remaining <= 0" class="text-emerald-600 dark:text-emerald-400 font-bold">
+              <i class="fa-solid fa-check-double mr-1"></i> Đã tất toán!
+            </span>
+            <span v-else class="font-bold" :class="color">
+              Còn lại: {{ formatVND(remaining) }}
+            </span>
+          </div>
         </div>
-        <div class="h-2 bg-gray-100 rounded-full overflow-hidden mb-3">
-          <div class="h-full rounded-full" :class="barColor" :style="{ width: progress + '%' }"></div>
-        </div>
-        <div v-if="remaining <= 0" class="text-green-600 text-sm">🎉 Đã tất toán!</div>
-        <div v-else :class="color" class="font-semibold text-lg">Còn lại: {{ formatVND(remaining) }}</div>
-        <div v-if="debt.due_date" class="text-xs text-gray-900 mt-2">Hạn: {{ debt.due_date }}</div>
-        <p v-if="debt.note" class="text-sm text-gray-900 mt-3">{{ debt.note }}</p>
+
+        <p v-if="debt.due_date" class="text-xs text-slate-400">
+          <i class="fa-regular fa-calendar-check mr-1"></i> Hạn thanh toán: <strong class="text-slate-700 dark:text-slate-300">{{ debt.due_date }}</strong>
+        </p>
+        <p v-if="debt.note" class="text-xs text-slate-500 dark:text-slate-400 mt-2 bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg inline-block">
+          {{ debt.note }}
+        </p>
       </div>
 
       <HistoryList
@@ -73,20 +95,20 @@ onMounted(() => {
 
       <button
         v-if="remaining > 0"
-        class="sticky bottom-6 block w-full sm:max-w-md sm:mx-auto bg-green-600 text-white rounded-xl py-3 font-medium"
+        class="block w-full sm:max-w-md sm:mx-auto bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-700 hover:to-green-600 text-white rounded-xl py-3 font-semibold text-sm shadow-md shadow-emerald-500/20 transition cursor-pointer"
         @click="showPayment = true"
       >
-        Ghi nhận thanh toán
+        <i class="fa-solid fa-coins mr-1.5"></i> Ghi nhận thanh toán
       </button>
 
-      <DebtFormModal v-if="showEdit" :existing="debt" @close="showEdit = false" @saved="showEdit = false" />
-      <DebtPaymentModal v-if="showPayment" :debt="debt" @close="showPayment = false" @saved="showPayment = false" />
+      <DebtFormModal v-if="showEdit" :existing="debt" @close="showEdit = false" @saved="showEdit = false; store.fetchAll()" />
+      <DebtPaymentModal v-if="showPayment" :debt="debt" @close="showPayment = false" @saved="showPayment = false; store.fetchAll()" />
       <DebtPaymentModal
         v-if="editingPayment"
         :debt="debt"
         :existing="editingPayment"
         @close="editingPayment = null"
-        @saved="editingPayment = null"
+        @saved="editingPayment = null; store.fetchAll()"
       />
     </div>
   </PageShell>

@@ -15,7 +15,7 @@ const store = useDebtsStore()
 const toast = useToastStore()
 const confirmDelete = useConfirmDelete()
 
-const type = ref(props.existing?.type || 'owe')
+const type = ref(props.existing?.type || 'lent')
 const personName = ref(props.existing?.person_name || '')
 const category = ref(props.existing?.category || currentCategories()[0].value)
 const totalAmount = ref(props.existing?.total_amount ?? '')
@@ -34,52 +34,117 @@ function switchType(t) {
 }
 
 async function save() {
+  if (!personName.value.trim()) {
+    toast.show('Vui lòng nhập họ tên người vay / chủ nợ', 'error')
+    return
+  }
+  if (!totalAmount.value || Number(totalAmount.value) <= 0) {
+    toast.show('Vui lòng nhập tổng số tiền nợ', 'error')
+    return
+  }
   const payload = {
-    person_name: personName.value, type: type.value, category: category.value,
-    total_amount: Number(totalAmount.value), paid_amount: Number(paidAmount.value),
-    due_date: hasDueDate.value ? dueDate.value : null, note: note.value,
+    person_name: personName.value.trim(),
+    type: type.value,
+    category: category.value,
+    total_amount: Number(totalAmount.value),
+    paid_amount: Number(paidAmount.value),
+    due_date: hasDueDate.value ? dueDate.value : null,
+    note: note.value.trim(),
   }
   if (props.existing) {
     await store.update(props.existing.id, payload)
   } else {
     await store.create(payload)
   }
-  toast.show('Đã lưu thành công')
+  toast.show('Đã lưu vào sổ nợ thành công!')
   emit('saved')
 }
+
 async function remove() {
-  const deleted = await confirmDelete(`Bạn có chắc chắn muốn xóa khoản nợ với "${props.existing.person_name}"?`, () => store.remove(props.existing.id))
+  const deleted = await confirmDelete(
+    `Bạn có chắc chắn muốn xóa khoản nợ với "${props.existing.person_name}"?`,
+    () => store.remove(props.existing.id)
+  )
   if (deleted) emit('saved')
 }
 </script>
 
 <template>
-  <ModalShell :title="existing ? 'Sửa khoản nợ' : 'Khoản nợ mới'" @close="$emit('close')">
-      <div class="flex rounded-lg overflow-hidden border">
-        <button class="flex-1 py-2 text-sm" :class="type === 'owe' ? 'bg-red-500 text-white' : ''" @click="switchType('owe')">Tôi nợ</button>
-        <button class="flex-1 py-2 text-sm" :class="type === 'lent' ? 'bg-green-500 text-white' : ''" @click="switchType('lent')">Cho vay</button>
+  <ModalShell :title="existing ? 'Chỉnh sửa khoản nợ' : 'Ghi sổ khoản nợ mới'" @close="$emit('close')">
+    <!-- Type Selector matching FinFlow -->
+    <div class="grid grid-cols-2 gap-3 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+      <button
+        type="button"
+        class="py-2.5 rounded-lg font-bold text-xs sm:text-sm transition cursor-pointer"
+        :class="type === 'lent' ? 'bg-emerald-500 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'"
+        @click="switchType('lent')"
+      >
+        Cho vay (Phải thu)
+      </button>
+      <button
+        type="button"
+        class="py-2.5 rounded-lg font-bold text-xs sm:text-sm transition cursor-pointer"
+        :class="type === 'owe' ? 'bg-rose-500 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'"
+        @click="switchType('owe')"
+      >
+        Đi vay (Phải trả)
+      </button>
+    </div>
+
+    <!-- Person name -->
+    <div>
+      <label class="form-label">Họ tên người vay / Chủ nợ *</label>
+      <input
+        v-model="personName"
+        type="text"
+        required
+        placeholder="VD: Lê Hoàng Nam, Anh Tuấn..."
+        class="form-input"
+      />
+    </div>
+
+    <!-- Amount Field -->
+    <AmountField v-model="totalAmount" placeholder="VD: 10000000" />
+
+    <div v-if="existing">
+      <label class="form-label">Số tiền đã trả / đã thu</label>
+      <AmountField v-model="paidAmount" placeholder="0" />
+    </div>
+
+    <!-- Category & Due Date -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="form-label">Danh mục</label>
+        <select v-model="category" class="form-input">
+          <option v-for="c in currentCategories()" :key="c.value" :value="c.value">
+            {{ c.value }}
+          </option>
+        </select>
       </div>
 
-      <input v-model="personName" type="text" placeholder="Tên người liên quan" class="w-full border rounded-lg px-3 py-2" />
-
-      <select v-model="category" class="w-full border rounded-lg px-3 py-2">
-        <option v-for="c in currentCategories()" :key="c.value" :value="c.value">{{ c.icon }} {{ c.value }}</option>
-      </select>
-
-      <AmountField v-model="totalAmount" placeholder="Tổng số tiền" />
-
-      <div v-if="existing">
-        <label class="text-xs text-gray-900">Đã trả / đã thu</label>
-        <AmountField v-model="paidAmount" />
+      <div>
+        <label class="form-label">Hạn thanh toán</label>
+        <input v-model="dueDate" type="date" class="form-input" />
       </div>
+    </div>
 
-      <label class="flex items-center gap-2 text-sm">
-        <input type="checkbox" v-model="hasDueDate" /> Có ngày hạn
-      </label>
-      <input v-if="hasDueDate" v-model="dueDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+    <!-- Note -->
+    <div>
+      <label class="form-label">Lý do / Ghi chú</label>
+      <input
+        v-model="note"
+        type="text"
+        placeholder="VD: Mượn xoay vòng vốn, cọc mặt bằng..."
+        class="form-input"
+      />
+    </div>
 
-      <input v-model="note" type="text" placeholder="Ghi chú (tùy chọn)" class="w-full border rounded-lg px-3 py-2" />
-
-      <ModalFooter :delete-label="existing ? 'Xóa khoản nợ này' : ''" @close="$emit('close')" @save="save" @remove="remove" />
+    <ModalFooter
+      :save-label="existing ? 'Cập nhật' : 'Lưu vào sổ nợ'"
+      :delete-label="existing ? 'Xóa khoản nợ này' : ''"
+      @close="$emit('close')"
+      @save="save"
+      @remove="remove"
+    />
   </ModalShell>
 </template>

@@ -10,6 +10,17 @@ export function todayISO(d = new Date()) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
+/** Khóa tháng hiện tại dạng YYYY-MM (dùng để kiểm tra hóa đơn đã thanh toán trong tháng). */
+export function currentMonthKey(d = new Date()) {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`
+}
+
+/** Chuỗi ngày tháng tiếng Việt hiển thị trên Header (VD: Thứ Tư, 04/11/2026). */
+export function formatHeaderDate(d = new Date()) {
+  const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
+  return `${days[d.getDay()]}, ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`
+}
+
 /** Bây giờ theo giờ địa phương, dạng YYYY-MM-DDTHH:mm (cho <input type="datetime-local">). */
 export function nowISO(d = new Date()) {
   return `${todayISO(d)}T${pad(d.getHours())}:${pad(d.getMinutes())}`

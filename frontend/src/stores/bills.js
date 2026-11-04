@@ -1,8 +1,16 @@
 import { defineStore } from 'pinia'
 import client from '../api/client'
+import { currentMonthKey } from '../utils/date'
+
+export function isBillPaidThisMonth(bill) {
+  return bill.last_paid_month === currentMonthKey()
+}
 
 export const useBillsStore = defineStore('bills', {
   state: () => ({ items: [] }),
+  getters: {
+    unpaidList: (state) => state.items.filter((b) => !isBillPaidThisMonth(b)),
+  },
   actions: {
     async fetchAll() {
       const { data } = await client.get('/bills')

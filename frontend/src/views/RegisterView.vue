@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useAuthForm } from '../composables/useAuthForm'
+import AuthShell from '../components/PageTitle.vue'
 
 const name = ref('')
 const email = ref('')
@@ -10,25 +11,35 @@ const auth = useAuthStore()
 
 const { error, loading, submit } = useAuthForm(
   () => auth.register(email.value, password.value, name.value),
-  'Đăng ký thất bại'
+  'Đăng ký thất bại. Vui lòng thử lại với email khác.'
 )
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-    <form @submit.prevent="submit" class="bg-white p-8 rounded-2xl card-shadow w-full max-w-sm space-y-4">
-      <h1 class="text-2xl font-bold text-center">Tạo tài khoản</h1>
-      <input v-model="name" type="text" placeholder="Tên của bạn" required class="w-full border rounded-lg px-3 py-2" />
-      <input v-model="email" type="email" placeholder="Email" required class="w-full border rounded-lg px-3 py-2" />
-      <input v-model="password" type="password" placeholder="Mật khẩu" required class="w-full border rounded-lg px-3 py-2" />
-      <p v-if="error" class="text-red-500 text-sm">{{ error }}</p>
-      <button :disabled="loading" class="w-full bg-green-600 text-white rounded-lg py-2 font-medium disabled:opacity-50">
-        {{ loading ? 'Đang tạo...' : 'Đăng ký' }}
-      </button>
-      <p class="text-center text-sm text-gray-900">
-        Đã có tài khoản?
-        <router-link to="/login" class="text-green-600">Đăng nhập</router-link>
-      </p>
-    </form>
-  </div>
+  <AuthShell
+    title="Tạo tài khoản mới"
+    :error="error"
+    :loading="loading"
+    submit-label="Đăng ký tài khoản"
+    loading-label="Đang tạo..."
+    footer-text="Đã có tài khoản?"
+    footer-link-text="Đăng nhập"
+    footer-link-to="/login"
+    @submit="submit"
+  >
+    <div>
+      <label class="form-label">Họ và tên</label>
+      <input v-model="name" type="text" placeholder="Minh Hoàng" required class="form-input" />
+    </div>
+
+    <div>
+      <label class="form-label">Email</label>
+      <input v-model="email" type="email" placeholder="name@example.com" required class="form-input" />
+    </div>
+
+    <div>
+      <label class="form-label">Mật khẩu</label>
+      <input v-model="password" type="password" placeholder="••••••••" required class="form-input" />
+    </div>
+  </AuthShell>
 </template>

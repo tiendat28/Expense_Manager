@@ -5,15 +5,30 @@ const toast = useToastStore()
 </script>
 
 <template>
-  <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 items-end pointer-events-none">
+  <div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0">
     <TransitionGroup name="toast">
       <div
         v-for="t in toast.items"
         :key="t.id"
-        class="pointer-events-auto flex items-center gap-2 bg-white border border-green-200 shadow-lg rounded-xl px-4 py-3 text-sm font-medium text-gray-900 max-w-xs"
+        class="pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-xl text-xs sm:text-sm font-medium transition-all duration-300"
+        :class="
+          t.type === 'error'
+            ? 'bg-slate-900 dark:bg-rose-950 text-white border-rose-500/40'
+            : t.type === 'info'
+              ? 'bg-slate-900 dark:bg-indigo-950 text-white border-indigo-500/40'
+              : 'bg-slate-900 dark:bg-emerald-950 text-white border-emerald-500/40'
+        "
       >
-        <span class="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs shrink-0">✓</span>
-        {{ t.message }}
+        <i
+          :class="
+            t.type === 'error'
+              ? 'fa-solid fa-circle-exclamation text-rose-400 text-base'
+              : t.type === 'info'
+                ? 'fa-solid fa-circle-info text-indigo-400 text-base'
+                : 'fa-solid fa-circle-check text-emerald-400 text-base'
+          "
+        ></i>
+        <span class="flex-1">{{ t.message }}</span>
       </div>
     </TransitionGroup>
   </div>
@@ -22,14 +37,14 @@ const toast = useToastStore()
 <style scoped>
 .toast-enter-active,
 .toast-leave-active {
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .toast-enter-from {
   opacity: 0;
-  transform: translateX(20px);
+  transform: translateY(12px);
 }
 .toast-leave-to {
   opacity: 0;
-  transform: translateX(20px);
+  transform: translateY(12px);
 }
 </style>

@@ -20,19 +20,26 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="showShell" class="h-screen bg-gray-50 flex flex-col overflow-hidden">
-    <AppHeader />
-    <div class="flex flex-1 min-h-0">
-      <AppSidebar />
-      <main class="flex-1 overflow-y-auto overflow-x-hidden pb-24 sm:pb-0">
+  <div v-if="showShell" class="h-screen bg-slate-100/80 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex overflow-hidden transition-colors">
+    <!-- Left Sidebar -->
+    <AppSidebar />
+
+    <!-- Main Content Column -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+      <AppHeader />
+      <main class="flex-1 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 lg:p-8 space-y-5 sm:space-y-6 pb-24 md:pb-8">
         <router-view />
       </main>
     </div>
+
+    <!-- Mobile Bottom Navigation -->
     <AppBottomNav />
   </div>
-  <div v-else class="min-h-screen bg-gray-50">
+
+  <div v-else class="min-h-screen bg-slate-100/80 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
     <router-view />
   </div>
+
   <ToastContainer />
   <ConfirmDialog />
 </template>

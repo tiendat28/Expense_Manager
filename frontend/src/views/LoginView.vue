@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useAuthForm } from '../composables/useAuthForm'
+import AuthShell from '../components/PageTitle.vue'
 
 const email = ref('')
 const password = ref('')
@@ -9,24 +10,30 @@ const auth = useAuthStore()
 
 const { error, loading, submit } = useAuthForm(
   () => auth.login(email.value, password.value),
-  'Đăng nhập thất bại'
+  'Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.'
 )
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-    <form @submit.prevent="submit" class="bg-white p-8 rounded-2xl card-shadow w-full max-w-sm space-y-4">
-      <h1 class="text-2xl font-bold text-center">Đăng nhập</h1>
-      <input v-model="email" type="email" placeholder="Email" required class="w-full border rounded-lg px-3 py-2" />
-      <input v-model="password" type="password" placeholder="Mật khẩu" required class="w-full border rounded-lg px-3 py-2" />
-      <p v-if="error" class="text-red-500 text-sm">{{ error }}</p>
-      <button :disabled="loading" class="w-full bg-green-600 text-white rounded-lg py-2 font-medium disabled:opacity-50">
-        {{ loading ? 'Đang đăng nhập...' : 'Đăng nhập' }}
-      </button>
-      <p class="text-center text-sm text-gray-900">
-        Chưa có tài khoản?
-        <router-link to="/register" class="text-green-600">Đăng ký</router-link>
-      </p>
-    </form>
-  </div>
+  <AuthShell
+    title="Đăng nhập tài khoản"
+    :error="error"
+    :loading="loading"
+    submit-label="Đăng nhập"
+    loading-label="Đang đăng nhập..."
+    footer-text="Chưa có tài khoản?"
+    footer-link-text="Đăng ký ngay"
+    footer-link-to="/register"
+    @submit="submit"
+  >
+    <div>
+      <label class="form-label">Email</label>
+      <input v-model="email" type="email" placeholder="name@example.com" required class="form-input" />
+    </div>
+
+    <div>
+      <label class="form-label">Mật khẩu</label>
+      <input v-model="password" type="password" placeholder="••••••••" required class="form-input" />
+    </div>
+  </AuthShell>
 </template>
