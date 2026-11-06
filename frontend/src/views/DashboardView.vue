@@ -45,82 +45,112 @@ onMounted(async () => {
 
 <template>
   <PageShell>
-    <!-- 4 KPI Cards Matching FinFlow HTML -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+    <!-- 4 KPI Cards (Mobile: 2x2 Rectangular Grid, Desktop: 1x4 Row) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5">
       <!-- KPI 1: Số dư ròng tháng -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 card-shadow relative overflow-hidden transition-colors">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Số dư ròng tháng</span>
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-            <i class="fa-solid fa-landmark text-base"></i>
+      <div class="card-surface p-3.5 sm:p-5 flex flex-col justify-between aspect-[4/3] min-h-[122px] sm:min-h-0 sm:aspect-auto relative overflow-hidden">
+        <div class="flex items-center justify-between gap-1 mb-1 sm:mb-3">
+          <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 truncate">
+            <span class="sm:hidden">Số dư ròng</span>
+            <span class="hidden sm:inline">Số dư ròng tháng</span>
+          </span>
+          <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-landmark text-xs sm:text-base"></i>
           </div>
         </div>
-        <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
-          {{ formatVND(balance) }}
-        </h2>
-        <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs">
-          <span class="inline-flex items-center gap-1 font-semibold" :class="balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+        <div class="my-auto sm:my-0 py-0.5">
+          <h2 class="font-display font-extrabold text-base sm:text-2xl xl:text-3xl text-slate-900 dark:text-white tracking-tight truncate">
+            {{ formatVND(balance) }}
+          </h2>
+        </div>
+        <div class="flex items-center justify-between pt-1.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800/80 text-[10px] sm:text-xs">
+          <span class="inline-flex items-center gap-1 font-semibold truncate" :class="balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
             <i :class="balance >= 0 ? 'fa-solid fa-arrow-trend-up' : 'fa-solid fa-arrow-trend-down'"></i>
             {{ balance >= 0 ? 'Thặng dư' : 'Thâm hụt' }}
           </span>
-          <span class="text-slate-400">Tháng {{ tx.selectedMonth }}/{{ tx.selectedYear }}</span>
+          <span class="text-slate-400 shrink-0">
+            <span class="sm:hidden">T{{ tx.selectedMonth }}</span>
+            <span class="hidden sm:inline">Tháng {{ tx.selectedMonth }}/{{ tx.selectedYear }}</span>
+          </span>
         </div>
       </div>
 
       <!-- KPI 2: Tổng thu tháng -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 card-shadow transition-colors">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tổng thu tháng {{ tx.selectedMonth }}</span>
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-            <i class="fa-solid fa-circle-arrow-down text-base"></i>
+      <div class="card-surface p-3.5 sm:p-5 flex flex-col justify-between aspect-[4/3] min-h-[122px] sm:min-h-0 sm:aspect-auto relative overflow-hidden">
+        <div class="flex items-center justify-between gap-1 mb-1 sm:mb-3">
+          <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 truncate">
+            <span class="sm:hidden">Tổng thu</span>
+            <span class="hidden sm:inline">Tổng thu tháng {{ tx.selectedMonth }}</span>
+          </span>
+          <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-circle-arrow-down text-xs sm:text-base"></i>
           </div>
         </div>
-        <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-emerald-600 dark:text-emerald-400 tracking-tight">
-          {{ formatVND(tx.monthlyStats.income_total) }}
-        </h2>
-        <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs">
-          <span class="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+        <div class="my-auto sm:my-0 py-0.5">
+          <h2 class="font-display font-extrabold text-base sm:text-2xl xl:text-3xl text-emerald-600 dark:text-emerald-400 tracking-tight truncate">
+            {{ formatVND(tx.monthlyStats.income_total) }}
+          </h2>
+        </div>
+        <div class="flex items-center justify-between pt-1.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800/80 text-[10px] sm:text-xs">
+          <span class="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400 truncate">
             <i class="fa-solid fa-arrow-trend-up"></i> Khoản thu
           </span>
-          <span class="text-slate-400">{{ (tx.items || []).filter(t => t.type === 'income').length }} giao dịch</span>
+          <span class="text-slate-400 shrink-0">
+            {{ (tx.items || []).filter(t => t.type === 'income').length }} <span class="hidden sm:inline">giao dịch</span><span class="sm:hidden">GD</span>
+          </span>
         </div>
       </div>
 
       <!-- KPI 3: Tổng chi tháng -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 card-shadow transition-colors">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tổng chi tháng {{ tx.selectedMonth }}</span>
-          <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-            <i class="fa-solid fa-circle-arrow-up text-base"></i>
+      <div class="card-surface p-3.5 sm:p-5 flex flex-col justify-between aspect-[4/3] min-h-[122px] sm:min-h-0 sm:aspect-auto relative overflow-hidden">
+        <div class="flex items-center justify-between gap-1 mb-1 sm:mb-3">
+          <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 truncate">
+            <span class="sm:hidden">Tổng chi</span>
+            <span class="hidden sm:inline">Tổng chi tháng {{ tx.selectedMonth }}</span>
+          </span>
+          <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-circle-arrow-up text-xs sm:text-base"></i>
           </div>
         </div>
-        <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-rose-600 dark:text-rose-400 tracking-tight">
-          {{ formatVND(tx.monthlyStats.expense_total) }}
-        </h2>
-        <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs">
-          <span class="inline-flex items-center gap-1 font-semibold text-rose-600 dark:text-rose-400">
+        <div class="my-auto sm:my-0 py-0.5">
+          <h2 class="font-display font-extrabold text-base sm:text-2xl xl:text-3xl text-rose-600 dark:text-rose-400 tracking-tight truncate">
+            {{ formatVND(tx.monthlyStats.expense_total) }}
+          </h2>
+        </div>
+        <div class="flex items-center justify-between pt-1.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800/80 text-[10px] sm:text-xs">
+          <span class="inline-flex items-center gap-1 font-semibold text-rose-600 dark:text-rose-400 truncate">
             <i class="fa-solid fa-circle-dot"></i> Khoản chi
           </span>
-          <span class="text-slate-400">{{ (tx.items || []).filter(t => t.type === 'expense').length }} giao dịch</span>
+          <span class="text-slate-400 shrink-0">
+            {{ (tx.items || []).filter(t => t.type === 'expense').length }} <span class="hidden sm:inline">giao dịch</span><span class="sm:hidden">GD</span>
+          </span>
         </div>
       </div>
 
       <!-- KPI 4: Ngân sách còn lại -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 card-shadow transition-colors">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Ngân sách còn lại</span>
-          <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-            <i class="fa-solid fa-scale-balanced text-base"></i>
+      <div class="card-surface p-3.5 sm:p-5 flex flex-col justify-between aspect-[4/3] min-h-[122px] sm:min-h-0 sm:aspect-auto relative overflow-hidden">
+        <div class="flex items-center justify-between gap-1 mb-1 sm:mb-3">
+          <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 truncate">
+            <span class="sm:hidden">Ngân sách</span>
+            <span class="hidden sm:inline">Ngân sách còn lại</span>
+          </span>
+          <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-scale-balanced text-xs sm:text-base"></i>
           </div>
         </div>
-        <h2 class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight" :class="remaining >= 0 ? 'text-slate-900 dark:text-white' : 'text-rose-600 dark:text-rose-400'">
-          {{ formatVND(Math.max(0, remaining)) }}
-        </h2>
-        <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs">
-          <span class="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
-            Đã dùng {{ budgetUsedPercent }}%
+        <div class="my-auto sm:my-0 py-0.5">
+          <h2 class="font-display font-extrabold text-base sm:text-2xl xl:text-3xl tracking-tight truncate" :class="remaining >= 0 ? 'text-slate-900 dark:text-white' : 'text-rose-600 dark:text-rose-400'">
+            {{ formatVND(Math.max(0, remaining)) }}
+          </h2>
+        </div>
+        <div class="flex items-center justify-between pt-1.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800/80 text-[10px] sm:text-xs">
+          <span class="inline-flex items-center gap-1 font-semibold truncate" :class="remaining >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+            Dùng {{ budgetUsedPercent }}%
           </span>
-          <span class="text-slate-400">Hạn mức: {{ formatVND(budget.monthlyBudget) }}</span>
+          <span class="text-slate-400 shrink-0">
+            <span class="sm:hidden">{{ formatVND(budget.monthlyBudget) }}</span>
+            <span class="hidden sm:inline">Hạn mức: {{ formatVND(budget.monthlyBudget) }}</span>
+          </span>
         </div>
       </div>
     </div>
